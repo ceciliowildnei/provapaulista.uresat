@@ -3,60 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prova Paulista URE-SAT</title>
+<title>Análise Consolidada Prova Paulista</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="hero">
-<nav class="nav">
-<div class="brand"><span class="mark">US</span><div><strong>URE-SAT</strong><small>Prova Paulista Consolidada</small></div></div>
-<a class="nav-action" href="#sistema">Acessar sistema</a>
+<div class="app-shell">
+<aside class="sidebar">
+<div class="sidebar-brand"><div class="brand-icon">PP</div><div><strong>Prova Paulista</strong><span>Análise Consolidada</span></div></div>
+<nav class="menu">
+<p>Provas Paulistas</p>
+<a class="active" href="#upload">Upload</a>
+<a href="#painel">Painel Executivo</a>
+<a href="#niveis">Níveis de Aprendizagem</a>
+<a href="#consolidado">Consolidado</a>
+<a href="#serie">Por Série</a>
+<a href="#turma">Por Turma</a>
+<a href="#evolucao">Evolução</a>
+<a href="#dados">Dados Brutos</a>
+<p>Avaliações Diagnósticas</p>
+<a href="#ad">Upload AD1 / AD2</a>
+<a href="#ad1">Painel AD1</a>
+<a href="#ad2">Painel AD2</a>
+<a href="#ad-evolucao">Evolução AD1 → AD2</a>
 </nav>
-<section class="hero-wrap">
-<div class="hero-text">
-<span class="tag">Unidade Regional de Ensino de Santo Anastácio</span>
-<h1>Consolidação inteligente da Prova Paulista</h1>
-<p>Organize SARESP, Avaliação Diagnóstica e Prova Paulista em um painel único, com análise por estudante, turma e unidade escolar.</p>
-<div class="hero-actions"><a class="button main" href="#sistema">Começar consolidação</a><a class="button outline" href="#regras">Entender critérios</a></div>
-</div>
-<aside class="hero-card">
-<div class="card-logo">URE<span>-SAT</span></div>
-<p>Fluxo oficial de evolução</p>
-<div class="steps"><span>SARESP</span><i></i><span>Diagnóstica</span><i></i><span>Prova Paulista</span></div>
+<div class="sidebar-footer"><button class="export" disabled>Exportar Excel</button></div>
 </aside>
-</section>
+<main class="workspace">
+<header class="topbar">
+<div><h1>Upload de Arquivos</h1><p>Carregue os arquivos para iniciar a análise</p></div>
+<div class="top-actions"><button class="primary" disabled>Analisar (0)</button><button class="secondary" disabled>Excel</button></div>
 </header>
-<main>
-<section class="institution">
-<div class="seal"><div class="roof"></div><div class="house"><span></span><span></span><span></span></div></div>
-<div><span class="tag">Identidade institucional</span><h2>URE-SAT</h2><p>Unidade Regional de Ensino de Santo Anastácio</p></div>
-</section>
-<section class="system" id="sistema">
-<div class="section-head"><span class="tag">Processamento</span><h2>Envie os arquivos da escola</h2><p>Use as três bases de avaliação. O sistema segue a ordem oficial para classificar a evolução.</p></div>
+<section class="content" id="upload">
+<div class="page-intro">
+<span>URE-SAT • Unidade Regional de Ensino de Santo Anastácio</span>
+<h2>Análise Consolidada PROVA PAULISTA</h2>
+<p>App para análise dos resultados das Provas Paulistas. Utilize arquivos do BI Prova Paulista, gere informações no próprio painel e exporte o resultado em Excel.</p>
+</div>
 <div class="upload-grid">
-<label class="upload"><b>SARESP</b><small>Turma, estudante, RA, LPT e MAT</small><input type="file" multiple></label>
-<label class="upload"><b>Diagnóstica</b><small>Participação, LP, MAT e público-alvo</small><input type="file" multiple></label>
-<label class="upload"><b>Prova Paulista</b><small>RA, acertos, PORT, MAT e status</small><input type="file" multiple></label>
+<article class="upload-card pp1"><div class="card-head"><b>PP1</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx"><strong>Solte ou clique para enviar</strong><small>.zip ou .xlsx</small></label></article>
+<article class="upload-card pp2"><div class="card-head"><b>PP2</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx"><strong>Solte ou clique para enviar</strong><small>.zip ou .xlsx</small></label></article>
+<article class="upload-card pp3"><div class="card-head"><b>PP3</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx"><strong>Solte ou clique para enviar</strong><small>.zip ou .xlsx</small></label></article>
 </div>
-<div class="controls"><button id="processar">Processar consolidação</button><button class="light">Baixar Excel</button></div>
-<p id="msg" class="message"></p>
-</section>
-<section class="stats">
+<div class="notice">Envie arquivos <b>.ZIP</b> ou <b>.xlsx</b> em PP1, PP2 e/ou PP3 e clique em <b>Analisar</b>. O nome do arquivo deve conter PP1/PP2/PP3 e o código da turma, por exemplo: <code>PP1 1A PC.xlsx</code>.</div>
+<section class="dashboard-preview" id="painel">
 <article><span>Estudantes</span><strong>0</strong></article>
+<article><span>Turmas</span><strong>0</strong></article>
 <article><span>Avançou</span><strong>0</strong></article>
-<article><span>Manteve</span><strong>0</strong></article>
-<article><span>Regrediu</span><strong>0</strong></article>
+<article><span>Sem dado</span><strong>0</strong></article>
 </section>
-<section class="rules" id="regras">
-<div class="section-head"><span class="tag">Critérios</span><h2>Regras de análise</h2></div>
-<div class="rule-grid">
-<article><span>01</span><h3>Ordem oficial</h3><p>SARESP → Diagnóstica → Prova Paulista.</p></article>
-<article><span>02</span><h3>Identificação</h3><p>Prioridade para RA. Na ausência, Estudante + Turma.</p></article>
-<article><span>03</span><h3>Resultado</h3><p>AVANÇOU, MANTEVE, REGREDIU ou SEM DADO.</p></article>
-</div>
 </section>
 </main>
-<footer>URE-SAT • Unidade Regional de Ensino de Santo Anastácio</footer>
+</div>
 <script src="app.js"></script>
 </body>
 </html>
