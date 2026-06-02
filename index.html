@@ -8,56 +8,51 @@
 </head>
 <body>
 <header class="hero">
-<nav class="topbar">
-<div class="brand"><span class="brand-icon">URE</span><span>Prova Paulista</span></div>
-<a class="navlink" href="#sistema">Acessar sistema</a>
+<nav class="nav">
+<div class="brand"><span class="mark">US</span><div><strong>URE-SAT</strong><small>Prova Paulista Consolidada</small></div></div>
+<a class="nav-action" href="#sistema">Acessar sistema</a>
 </nav>
-<section class="hero-grid">
-<div class="hero-copy">
-<p class="kicker">Unidade Regional de Ensino de Santo Anastácio</p>
-<h1>Consolidação Prova Paulista URE-SAT</h1>
-<p class="lead">Sistema de consolidação educacional para SARESP, Avaliação Diagnóstica e Prova Paulista, com análise evolutiva por estudante, turma e unidade escolar.</p>
-<div class="actions">
-<a class="btn primary" href="#sistema">Enviar arquivos</a>
-<a class="btn ghost" href="#regras">Ver regras</a>
+<section class="hero-wrap">
+<div class="hero-text">
+<span class="tag">Unidade Regional de Ensino de Santo Anastácio</span>
+<h1>Consolidação inteligente da Prova Paulista</h1>
+<p>Organize SARESP, Avaliação Diagnóstica e Prova Paulista em um painel único, com análise por estudante, turma e unidade escolar.</p>
+<div class="hero-actions"><a class="button main" href="#sistema">Começar consolidação</a><a class="button outline" href="#regras">Entender critérios</a></div>
 </div>
-</div>
-<div class="identity-card mascot-card">
-<div class="mascot-face">
-<div class="cap"></div><div class="eye left"></div><div class="eye right"></div><div class="smile"></div>
-</div>
-<strong>URE-SAT</strong>
-<span>Consolidada</span>
-</div>
+<aside class="hero-card">
+<div class="card-logo">URE<span>-SAT</span></div>
+<p>Fluxo oficial de evolução</p>
+<div class="steps"><span>SARESP</span><i></i><span>Diagnóstica</span><i></i><span>Prova Paulista</span></div>
+</aside>
 </section>
 </header>
 <main>
-<section class="logo-section">
-<div class="school-illustration">
-<div class="roof"></div><div class="building"><div></div><div></div><div></div></div><div class="garden"></div>
-</div>
-<h2>URE-SAT</h2>
-<p>Unidade Regional de Ensino de Santo Anastácio</p>
+<section class="institution">
+<div class="seal"><div class="roof"></div><div class="house"><span></span><span></span><span></span></div></div>
+<div><span class="tag">Identidade institucional</span><h2>URE-SAT</h2><p>Unidade Regional de Ensino de Santo Anastácio</p></div>
 </section>
-<section class="panel" id="sistema">
-<div class="section-title"><p class="kicker">Processamento</p><h2>Sistema de consolidação</h2><p>Envie os arquivos da escola e processe os dados conforme a ordem oficial.</p></div>
+<section class="system" id="sistema">
+<div class="section-head"><span class="tag">Processamento</span><h2>Envie os arquivos da escola</h2><p>Use as três bases de avaliação. O sistema segue a ordem oficial para classificar a evolução.</p></div>
 <div class="upload-grid">
-<label class="upload-card"><span>SARESP</span><input type="file" multiple><small>Turma, estudante, RA, LPT e MAT.</small></label>
-<label class="upload-card"><span>Diagnóstica</span><input type="file" multiple><small>Participação, LP, MAT e público-alvo.</small></label>
-<label class="upload-card"><span>Prova Paulista</span><input type="file" multiple><small>RA, acertos, PORT, MAT e status.</small></label>
+<label class="upload"><b>SARESP</b><small>Turma, estudante, RA, LPT e MAT</small><input type="file" multiple></label>
+<label class="upload"><b>Diagnóstica</b><small>Participação, LP, MAT e público-alvo</small><input type="file" multiple></label>
+<label class="upload"><b>Prova Paulista</b><small>RA, acertos, PORT, MAT e status</small><input type="file" multiple></label>
 </div>
-<div class="controls"><button id="processar">Processar consolidação</button><button class="secondary">Baixar Excel</button></div>
+<div class="controls"><button id="processar">Processar consolidação</button><button class="light">Baixar Excel</button></div>
 <p id="msg" class="message"></p>
 </section>
-<section class="metrics">
-<article><span>Estudantes</span><strong>0</strong></article><article><span>Avançou</span><strong>0</strong></article><article><span>Manteve</span><strong>0</strong></article><article><span>Regrediu</span><strong>0</strong></article>
+<section class="stats">
+<article><span>Estudantes</span><strong>0</strong></article>
+<article><span>Avançou</span><strong>0</strong></article>
+<article><span>Manteve</span><strong>0</strong></article>
+<article><span>Regrediu</span><strong>0</strong></article>
 </section>
-<section class="panel" id="regras">
-<div class="section-title"><p class="kicker">Regras</p><h2>Critérios oficiais</h2></div>
-<div class="rules">
-<article><h3>Ordem</h3><p>SARESP → Diagnóstica → Prova Paulista.</p></article>
-<article><h3>Chave</h3><p>RA do estudante. Se não existir, Estudante + Turma.</p></article>
-<article><h3>Status</h3><p>AVANÇOU, MANTEVE, REGREDIU ou SEM DADO.</p></article>
+<section class="rules" id="regras">
+<div class="section-head"><span class="tag">Critérios</span><h2>Regras de análise</h2></div>
+<div class="rule-grid">
+<article><span>01</span><h3>Ordem oficial</h3><p>SARESP → Diagnóstica → Prova Paulista.</p></article>
+<article><span>02</span><h3>Identificação</h3><p>Prioridade para RA. Na ausência, Estudante + Turma.</p></article>
+<article><span>03</span><h3>Resultado</h3><p>AVANÇOU, MANTEVE, REGREDIU ou SEM DADO.</p></article>
 </div>
 </section>
 </main>
