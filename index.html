@@ -3,48 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Análise Consolidada Prova Paulista</title>
+<title>Consolidação Educacional URE-SAT</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div class="app-shell">
 <aside class="sidebar">
-<div class="sidebar-brand"><div class="brand-icon">PP</div><div><strong>Prova Paulista</strong><span>Análise Consolidada</span></div></div>
+<div class="sidebar-brand"><div class="brand-icon">CE</div><div><strong>Consolidação Educacional</strong><span>SARESP → Diagnóstica → Prova Paulista</span></div></div>
 <nav class="menu">
-<p>Provas Paulistas</p>
+<p>Sistema</p>
 <a class="active" href="#upload">Upload</a>
 <a href="#painel">Painel Executivo</a>
-<a href="#niveis">Níveis de Aprendizagem</a>
-<a href="#consolidado">Consolidado</a>
-<a href="#serie">Por Série</a>
-<a href="#turma">Por Turma</a>
+<a href="#turmas">Turmas</a>
 <a href="#evolucao">Evolução</a>
 <a href="#dados">Dados Brutos</a>
-<p>Avaliações Diagnósticas</p>
-<a href="#ad">Upload AD1 / AD2</a>
-<a href="#ad1">Painel AD1</a>
-<a href="#ad2">Painel AD2</a>
-<a href="#ad-evolucao">Evolução AD1 → AD2</a>
+<a href="#parametros">Parâmetros</a>
 </nav>
 <div class="sidebar-footer"><button class="export" disabled>Exportar Excel</button></div>
 </aside>
 <main class="workspace">
 <header class="topbar">
-<div><h1>Upload de Arquivos</h1><p>Carregue os arquivos para iniciar a análise</p></div>
+<div><h1>Consolidação Educacional</h1><p>Analise a evolução: SARESP → Diagnóstica → Prova Paulista</p></div>
 <div class="top-actions"><button class="primary" disabled>Analisar (0)</button><button class="secondary" disabled>Excel</button></div>
 </header>
 <section class="content" id="upload">
 <div class="page-intro">
 <span>URE-SAT • Unidade Regional de Ensino de Santo Anastácio</span>
-<h2>Análise Consolidada PROVA PAULISTA</h2>
-<p>App para análise dos resultados das Provas Paulistas. Utilize arquivos do BI Prova Paulista, gere informações no próprio painel e exporte o resultado em Excel.</p>
+<h2>PAINEL CONSOLIDADO DA UNIDADE</h2>
+<p>Consolidado seguindo a ordem: SARESP → Diagnóstica → Prova Paulista. Envie as três bases para gerar análise evolutiva por estudante, turma e unidade escolar.</p>
 </div>
 <div class="upload-grid">
-<article class="upload-card pp1"><div class="card-head"><b>PP1</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx"><strong>Solte ou clique para enviar</strong><small>.zip ou .xlsx</small></label></article>
-<article class="upload-card pp2"><div class="card-head"><b>PP2</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx"><strong>Solte ou clique para enviar</strong><small>.zip ou .xlsx</small></label></article>
-<article class="upload-card pp3"><div class="card-head"><b>PP3</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx"><strong>Solte ou clique para enviar</strong><small>.zip ou .xlsx</small></label></article>
+<article class="upload-card pp1"><div class="card-head"><b>SARESP</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx,.xls,.csv"><strong>Solte ou clique para enviar</strong><small>.zip, .xlsx, .xls ou .csv</small></label></article>
+<article class="upload-card pp2"><div class="card-head"><b>Diagnóstica</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx,.xls,.csv"><strong>Solte ou clique para enviar</strong><small>.zip, .xlsx, .xls ou .csv</small></label></article>
+<article class="upload-card pp3"><div class="card-head"><b>Prova Paulista</b><span>0 arquivos</span></div><label class="dropzone"><input type="file" multiple accept=".zip,.xlsx,.xls,.csv"><strong>Solte ou clique para enviar</strong><small>.zip, .xlsx, .xls ou .csv</small></label></article>
 </div>
-<div class="notice">Envie arquivos <b>.ZIP</b> ou <b>.xlsx</b> em PP1, PP2 e/ou PP3 e clique em <b>Analisar</b>. O nome do arquivo deve conter PP1/PP2/PP3 e o código da turma, por exemplo: <code>PP1 1A PC.xlsx</code>.</div>
+<div class="notice">Envie os arquivos de <b>SARESP</b>, <b>Diagnóstica</b> e <b>Prova Paulista</b> e clique em <b>Analisar</b>.</div>
 <section class="dashboard-preview" id="painel">
 <article><span>Estudantes</span><strong>0</strong></article>
 <article><span>Turmas</span><strong>0</strong></article>
