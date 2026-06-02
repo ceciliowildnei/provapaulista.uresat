@@ -1,0 +1,3 @@
+function lerCSV(texto){return texto.trim().split('\n').map(l=>l.split(';'))}
+function mostrar(msg){document.getElementById('msg').textContent=msg}
+document.addEventListener('DOMContentLoaded',function(){var botao=document.getElementById('processar');if(!botao)return;botao.onclick=function(){mostrar('Sistema pronto. Envie arquivos CSV separados por ponto e virgula para consolidar. A versao XLSX completa esta no pacote original.')}});
