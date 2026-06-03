@@ -15,6 +15,7 @@
 <p>Sistema</p>
 <a class="active" href="#upload">Upload</a>
 <a href="#painel">Painel Executivo</a>
+<a href="#niveis">Níveis de Proficiência</a>
 <a href="#graficos">Gráficos</a>
 <a href="#turmas">Turmas</a>
 <a href="#evolucao">Evolução</a>
@@ -46,6 +47,19 @@
 <article><span>Avançou</span><strong>0</strong></article>
 <article><span>Sem dado</span><strong>0</strong></article>
 </section>
+<section class="proficiency-section" id="niveis">
+<div class="proficiency-head">
+<div><h2>Níveis de Proficiência</h2><p>Separe estudantes por série/turma, disciplina, avaliação e nível. Use esses dados para intervenção pedagógica e dados gerais da escola.</p></div>
+</div>
+<div class="proficiency-controls">
+<label>Disciplina<select id="profDisciplina"><option value="LP">Língua Portuguesa</option><option value="MAT">Matemática</option><option value="GERAL">Status Geral</option></select></label>
+<label>Avaliação<select id="profAvaliacao"><option value="FINAL">Status Final</option><option value="SARESP">SARESP</option><option value="DIAG">Diagnóstica</option><option value="PP">Prova Paulista</option></select></label>
+<label>Nível<select id="profNivel"><option value="TODOS">Todos</option><option value="Abaixo do Básico">Abaixo do Básico</option><option value="Básico">Básico</option><option value="Proficiente">Proficiente</option><option value="AVANÇOU">AVANÇOU</option><option value="MANTEVE">MANTEVE</option><option value="REGREDIU">REGREDIU</option><option value="SEM DADO">SEM DADO</option></select></label>
+<label>Série/Turma<select id="profTurma"><option value="TODAS">Todas</option></select></label>
+<button id="profApply" class="primary" type="button">Atualizar aba</button>
+</div>
+<div id="profResumo" class="proficiency-output"><p>Após a análise, os estudantes serão separados por nível de proficiência nesta aba.</p></div>
+</section>
 <section class="charts-section" id="graficos">
 <div class="chart-grid">
 <article class="chart-card"><h3>Status Final Geral</h3><canvas id="chartStatusGeral"></canvas></article>
@@ -60,5 +74,6 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="app.js"></script>
+<script src="proficiency.js"></script>
 </body>
 </html>
