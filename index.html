@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="charts.css">
 <link rel="stylesheet" href="proficiency.css">
+<link rel="stylesheet" href="assessment-tabs.css">
 </head>
 <body>
 <div class="app-shell">
@@ -15,6 +16,7 @@
 <nav class="menu">
 <p>Sistema</p>
 <a class="active" href="#upload">Upload</a>
+<a href="#abas-avaliacoes">Abas das Avaliações</a>
 <a href="#painel">Painel Executivo</a>
 <a href="#niveis">Níveis de Proficiência</a>
 <a href="#ppdisciplinas">PP Disciplinas</a>
@@ -28,19 +30,31 @@
 </aside>
 <main class="workspace">
 <header class="topbar">
-<div><h1>Consolidação Educacional</h1><p>Analise a evolução: SARESP → Diagnóstica → Prova Paulista</p></div>
+<div><h1>Consolidação Educacional</h1><p>Analise cada avaliação separadamente e, se quiser, gere o consolidado.</p></div>
 <div class="top-actions"><button class="primary" disabled>Analisar (0)</button><button class="secondary" disabled>Excel</button></div>
 </header>
 <section class="content" id="upload">
 <div class="page-intro">
 <span>URE-SAT • Unidade Regional de Ensino de Santo Anastácio</span>
 <h2>PAINEL CONSOLIDADO DA UNIDADE</h2>
-<p>Envie todos os arquivos em um único campo. O sistema separa automaticamente SARESP, Diagnóstica e Prova Paulista.</p>
+<p>Envie uma ou mais bases. Se mandar só Prova Paulista, só a aba Prova Paulista será preenchida. Se mandar SARESP, Diagnóstica e Prova Paulista, o consolidado comparativo também será gerado.</p>
 </div>
 <div class="upload-grid" style="grid-template-columns:1fr">
-<article class="upload-card pp1"><div class="card-head"><b>Arquivo único</b><span>0 arquivos</span></div><label class="dropzone"><input id="singleUpload" type="file" multiple accept=".zip,.xlsx,.xls,.csv"><strong>Solte ou clique para enviar todos os arquivos</strong><small>SARESP, Diagnóstica e Prova Paulista juntos — .zip, .xlsx, .xls ou .csv</small></label></article>
+<article class="upload-card pp1"><div class="card-head"><b>Arquivo único</b><span>0 arquivos</span></div><label class="dropzone"><input id="singleUpload" type="file" multiple accept=".zip,.xlsx,.xls,.csv"><strong>Solte ou clique para enviar todos os arquivos</strong><small>Prova Paulista, SARESP e/ou Diagnóstica — .zip, .xlsx, .xls ou .csv</small></label></article>
 </div>
-<div class="notice">Envie todos os arquivos no campo único e clique em <b>Analisar</b>. A identificação será automática pelo nome do arquivo e pelas colunas.</div>
+<div class="notice">Envie os arquivos no campo único e clique em <b>Analisar</b>. O sistema interpreta quais bases existem e preenche somente as abas correspondentes.</div>
+<section class="assessment-tabs" id="abas-avaliacoes">
+<div class="assessment-tab-buttons">
+<button class="active" type="button" data-assessment-tab="tabPP">Prova Paulista</button>
+<button type="button" data-assessment-tab="tabSaresp">SARESP</button>
+<button type="button" data-assessment-tab="tabDiag">Diagnóstica</button>
+<button type="button" data-assessment-tab="tabCons">Consolidado / Comparativos</button>
+</div>
+<div class="assessment-panel active" id="tabPP"><h2>Prova Paulista</h2><p class="muted">Alunos separados por Ano/Série, Turma e nível: Abaixo do Básico, Básico e Proficiente.</p><div id="tabPPContent"><div class="empty-base">Envie dados da Prova Paulista para preencher esta aba.</div></div></div>
+<div class="assessment-panel" id="tabSaresp"><h2>SARESP</h2><p class="muted">Dados do SARESP separados por Ano/Série, Turma e nível.</p><div id="tabSarespContent"><div class="empty-base">Envie dados do SARESP para preencher esta aba.</div></div></div>
+<div class="assessment-panel" id="tabDiag"><h2>Diagnóstica</h2><p class="muted">Dados da avaliação diagnóstica separados por Ano/Série, Turma e nível.</p><div id="tabDiagContent"><div class="empty-base">Envie dados da Diagnóstica para preencher esta aba.</div></div></div>
+<div class="assessment-panel" id="tabCons"><h2>Consolidado / Comparativos</h2><p class="muted">Comparativo entre as avaliações disponíveis. Se houver apenas uma base, esta aba mostra somente o que for possível comparar.</p><div id="tabConsContent"><div class="empty-base">Envie duas ou mais bases para gerar comparativos.</div></div></div>
+</section>
 <section class="dashboard-preview" id="painel">
 <article><span>Estudantes</span><strong>0</strong></article>
 <article><span>Turmas</span><strong>0</strong></article>
@@ -82,6 +96,7 @@
 <script src="all-disciplines-pp.js"></script>
 <script src="tabs.js"></script>
 <script src="series-grouping.js"></script>
+<script src="assessment-tabs.js"></script>
 <script src="proficiency.js"></script>
 </body>
 </html>
