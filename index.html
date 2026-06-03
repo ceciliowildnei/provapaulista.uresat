@@ -14,6 +14,7 @@
 <p>Sistema</p>
 <a class="active" href="#upload">Upload</a>
 <a href="#painel">Painel Executivo</a>
+<a href="#graficos">Gráficos</a>
 <a href="#turmas">Turmas</a>
 <a href="#evolucao">Evolução</a>
 <a href="#dados">Dados Brutos</a>
@@ -44,9 +45,19 @@
 <article><span>Avançou</span><strong>0</strong></article>
 <article><span>Sem dado</span><strong>0</strong></article>
 </section>
+<section class="charts-section" id="graficos">
+<div class="chart-grid">
+<article class="chart-card"><h3>Status Final Geral</h3><canvas id="chartStatusGeral"></canvas></article>
+<article class="chart-card"><h3>Curva de Evolução da Unidade</h3><canvas id="chartCurvaEvolucao"></canvas></article>
+<article class="chart-card"><h3>Distribuição LP por Avaliação</h3><canvas id="chartLP"></canvas></article>
+<article class="chart-card"><h3>Distribuição MAT por Avaliação</h3><canvas id="chartMAT"></canvas></article>
+<article class="chart-card full"><h3>Evolução por Turma</h3><canvas id="chartTurmas"></canvas></article>
+</div>
+</section>
 </section>
 </main>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
