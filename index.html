@@ -17,9 +17,11 @@
 </div>
 <section class="panel active" id="pp"><h2>Prova Paulista</h2><p>Todas as disciplinas encontradas no arquivo.</p><div class="upload-box"><strong>Anexar dados da Prova Paulista</strong><input type="file" id="file-pp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="pp">Analisar Prova Paulista</button><div id="msg-pp" class="msg">Aguardando arquivo.</div><div id="out-pp"></div></section>
 <section class="panel" id="saresp"><h2>SARESP</h2><p>Todas as disciplinas encontradas no arquivo.</p><div class="upload-box"><strong>Anexar dados do SARESP</strong><input type="file" id="file-saresp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="saresp">Analisar SARESP</button><div id="msg-saresp" class="msg">Aguardando arquivo.</div><div id="out-saresp"></div></section>
-<section class="panel" id="diag"><h2>Diagnóstica</h2><p>Somente Língua Portuguesa e Matemática.</p><div class="upload-box"><strong>Anexar dados da Diagnóstica</strong><input type="file" id="file-diag" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="diag">Analisar Diagnóstica</button><div id="msg-diag" class="msg">Aguardando arquivo.</div><div id="out-diag"></div></section>
+<section class="panel" id="diag"><h2>Diagnóstica / Paramaran</h2><p>Somente Língua Portuguesa e Matemática.</p><div class="upload-box"><strong>Anexar dados da Diagnóstica</strong><input type="file" id="file-diag" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="diag">Analisar Diagnóstica</button><div id="msg-diag" class="msg">Aguardando arquivo.</div><div id="out-diag"></div></section>
 <section class="panel" id="cons"><h2>Consolidado</h2><p>Comparativo entre as avaliações analisadas.</p><button class="btn secondary" id="btn-cons">Gerar Consolidado</button><button class="btn" id="btn-xlsx">Exportar Excel</button><div id="msg-cons" class="msg">Analise pelo menos uma avaliação.</div><div id="out-cons"></div></section>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="simple-app.js"></script>
 </body>
 </html>
