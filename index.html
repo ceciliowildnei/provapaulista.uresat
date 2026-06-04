@@ -3,101 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Consolidação Educacional URE-SAT</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="charts.css">
-<link rel="stylesheet" href="proficiency.css">
-<link rel="stylesheet" href="assessment-tabs.css">
+<title>Avaliações</title>
+<link rel="stylesheet" href="simple.css">
 </head>
 <body>
-<div class="app-shell">
-<aside class="sidebar">
-<div class="sidebar-brand"><div class="brand-icon">CE</div><div><strong>Consolidação Educacional</strong><span>SARESP → Diagnóstica → Prova Paulista</span></div></div>
-<nav class="menu">
-<p>Sistema</p>
-<a class="active" href="#upload">Upload</a>
-<a href="#abas-avaliacoes">Abas das Avaliações</a>
-<a href="#painel">Painel Executivo</a>
-<a href="#niveis">Níveis de Proficiência</a>
-<a href="#ppdisciplinas">PP Disciplinas</a>
-<a href="#graficos">Gráficos</a>
-<a href="#turmas">Ano/Série e Turmas</a>
-<a href="#evolucao">Evolução</a>
-<a href="#dados">Dados Brutos</a>
-<a href="#parametros">Parâmetros</a>
-</nav>
-<div class="sidebar-footer"><button class="export" disabled>Exportar Excel</button></div>
-</aside>
-<main class="workspace">
-<header class="topbar">
-<div><h1>Consolidação Educacional</h1><p>Analise cada avaliação separadamente e, se quiser, gere o consolidado.</p></div>
-<div class="top-actions"><button class="primary" disabled>Analisar (0)</button><button class="secondary" disabled>Excel</button></div>
-</header>
-<section class="content" id="upload">
-<div class="page-intro">
-<span>URE-SAT • Unidade Regional de Ensino de Santo Anastácio</span>
-<h2>PAINEL CONSOLIDADO DA UNIDADE</h2>
-<p>Envie uma ou mais bases. Se mandar só Prova Paulista, só a aba Prova Paulista será preenchida. Se mandar SARESP, Diagnóstica e Prova Paulista, o consolidado comparativo também será gerado.</p>
+<div class="wrap">
+<section class="hero"><h1>Avaliações</h1><p>Blocos independentes: Prova Paulista, SARESP, Diagnóstica e Consolidado.</p></section>
+<div class="tabs">
+<button class="tab-btn active" data-tab="pp">Prova Paulista</button>
+<button class="tab-btn" data-tab="saresp">SARESP</button>
+<button class="tab-btn" data-tab="diag">Diagnóstica</button>
+<button class="tab-btn" data-tab="cons">Consolidado</button>
 </div>
-<div class="upload-grid" style="grid-template-columns:1fr">
-<article class="upload-card pp1"><div class="card-head"><b>Arquivo único</b><span>0 arquivos</span></div><label class="dropzone"><input id="singleUpload" type="file" multiple accept=".zip,.xlsx,.xls,.csv"><strong>Solte ou clique para enviar todos os arquivos</strong><small>Prova Paulista, SARESP e/ou Diagnóstica — .zip, .xlsx, .xls ou .csv</small></label></article>
+<section class="panel active" id="pp"><h2>Prova Paulista</h2><p>Todas as disciplinas encontradas no arquivo.</p><div class="upload-box"><strong>Anexar dados da Prova Paulista</strong><input type="file" id="file-pp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="pp">Analisar Prova Paulista</button><div id="msg-pp" class="msg">Aguardando arquivo.</div><div id="out-pp"></div></section>
+<section class="panel" id="saresp"><h2>SARESP</h2><p>Todas as disciplinas encontradas no arquivo.</p><div class="upload-box"><strong>Anexar dados do SARESP</strong><input type="file" id="file-saresp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="saresp">Analisar SARESP</button><div id="msg-saresp" class="msg">Aguardando arquivo.</div><div id="out-saresp"></div></section>
+<section class="panel" id="diag"><h2>Diagnóstica</h2><p>Somente Língua Portuguesa e Matemática.</p><div class="upload-box"><strong>Anexar dados da Diagnóstica</strong><input type="file" id="file-diag" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="diag">Analisar Diagnóstica</button><div id="msg-diag" class="msg">Aguardando arquivo.</div><div id="out-diag"></div></section>
+<section class="panel" id="cons"><h2>Consolidado</h2><p>Comparativo entre as avaliações analisadas.</p><button class="btn secondary" id="btn-cons">Gerar Consolidado</button><button class="btn" id="btn-xlsx">Exportar Excel</button><div id="msg-cons" class="msg">Analise pelo menos uma avaliação.</div><div id="out-cons"></div></section>
 </div>
-<div class="notice">Envie os arquivos no campo único e clique em <b>Analisar</b>. O sistema interpreta quais bases existem e preenche somente as abas correspondentes.</div>
-<section class="assessment-tabs" id="abas-avaliacoes">
-<div class="assessment-tab-buttons">
-<button class="active" type="button" data-assessment-tab="tabPP">Prova Paulista</button>
-<button type="button" data-assessment-tab="tabSaresp">SARESP</button>
-<button type="button" data-assessment-tab="tabDiag">Diagnóstica</button>
-<button type="button" data-assessment-tab="tabCons">Consolidado / Comparativos</button>
-</div>
-<div class="assessment-panel active" id="tabPP"><h2>Prova Paulista</h2><p class="muted">Todas as disciplinas encontradas, com lista inferior de alunos abaixo do básico por disciplina.</p><div id="tabPPContent"><div class="empty-base">Envie dados da Prova Paulista para preencher esta aba.</div></div></div>
-<div class="assessment-panel" id="tabSaresp"><h2>SARESP</h2><p class="muted">Todas as disciplinas encontradas, com lista inferior de alunos abaixo do básico por disciplina.</p><div id="tabSarespContent"><div class="empty-base">Envie dados do SARESP para preencher esta aba.</div></div></div>
-<div class="assessment-panel" id="tabDiag"><h2>Diagnóstica</h2><p class="muted">Somente Língua Portuguesa e Matemática, com lista inferior de alunos abaixo do básico.</p><div id="tabDiagContent"><div class="empty-base">Envie dados da Diagnóstica para preencher esta aba.</div></div></div>
-<div class="assessment-panel" id="tabCons"><h2>Consolidado / Comparativos</h2><p class="muted">Comparativo entre as avaliações disponíveis. Se houver apenas uma base, esta aba mostra somente o que for possível comparar.</p><div id="tabConsContent"><div class="empty-base">Envie duas ou mais bases para gerar comparativos.</div></div></div>
-</section>
-<section class="dashboard-preview" id="painel">
-<article><span>Estudantes</span><strong>0</strong></article>
-<article><span>Turmas</span><strong>0</strong></article>
-<article><span>Avançou</span><strong>0</strong></article>
-<article><span>Sem dado</span><strong>0</strong></article>
-</section>
-<section class="proficiency-section" id="niveis">
-<div class="proficiency-head"><div><h2>Níveis de Proficiência</h2><p>Separe estudantes por série/turma, disciplina, avaliação e nível. Use estes dados para intervenção pedagógica e dados gerais da escola.</p></div></div>
-<div class="proficiency-controls">
-<label>Disciplina<select id="profDisciplina"><option value="LP">Língua Portuguesa</option><option value="MAT">Matemática</option><option value="GERAL">Status Geral</option></select></label>
-<label>Avaliação<select id="profAvaliacao"><option value="FINAL">Status Final</option><option value="SARESP">SARESP</option><option value="DIAG">Diagnóstica</option><option value="PP">Prova Paulista</option></select></label>
-<label>Nível<select id="profNivel"><option value="TODOS">Todos</option><option value="Abaixo do Básico">Abaixo do Básico</option><option value="Básico">Básico</option><option value="Proficiente">Proficiente</option><option value="AVANÇOU">AVANÇOU</option><option value="MANTEVE">MANTEVE</option><option value="REGREDIU">REGREDIU</option><option value="SEM DADO">SEM DADO</option></select></label>
-<label>Série/Turma<select id="profTurma"><option value="TODAS">Todas</option></select></label>
-<button id="profApply" class="primary" type="button">Atualizar aba</button>
-</div>
-<div id="profResumo" class="proficiency-output"><p>Após a análise, os estudantes serão separados por nível de proficiência nesta aba.</p></div>
-</section>
-<section class="analysis-card app-tab" id="ppdisciplinas"><h2>Prova Paulista — Todas as Disciplinas</h2><div id="ppDisciplinasContent"><p>Após analisar um arquivo da Prova Paulista, aparecerá aqui a separação por todas as disciplinas encontradas.</p></div></section>
-<section class="charts-section" id="graficos">
-<div class="chart-grid">
-<article class="chart-card"><h3>Status Final Geral</h3><canvas id="chartStatusGeral"></canvas></article>
-<article class="chart-card"><h3>Curva de Evolução da Unidade</h3><canvas id="chartCurvaEvolucao"></canvas></article>
-<article class="chart-card"><h3>Distribuição LP por Avaliação</h3><canvas id="chartLP"></canvas></article>
-<article class="chart-card"><h3>Distribuição MAT por Avaliação</h3><canvas id="chartMAT"></canvas></article>
-<article class="chart-card full"><h3>Evolução por Turma</h3><canvas id="chartTurmas"></canvas></article>
-</div>
-</section>
-<section class="analysis-card app-tab" id="turmas"><h2>Ano/Série e Turmas</h2><div id="turmasContent"><p>Após clicar em Analisar, aparecerá aqui o resumo por Ano/Série e Turma.</p></div></section>
-<section class="analysis-card app-tab" id="evolucao"><h2>Evolução</h2><div id="evolucaoContent"><p>Após clicar em Analisar, aparecerá aqui o ranking por Ano/Série e Turma.</p></div></section>
-<section class="analysis-card app-tab" id="dados"><h2>Dados Brutos</h2><div id="dadosContent"><p>Após clicar em Analisar, aparecerão aqui os dados consolidados por Ano/Série e Turma.</p></div></section>
-<section class="analysis-card app-tab" id="parametros"><h2>Parâmetros</h2><div id="parametrosContent"><table class="analysis-table"><tbody><tr><th>Ordem de comparação</th><td>SARESP → Diagnóstica → Prova Paulista</td></tr><tr><th>Hierarquia</th><td>Abaixo do Básico = 1; Básico = 2; Proficiente = 3</td></tr><tr><th>Evolução</th><td>Maior que o inicial = AVANÇOU; igual = MANTEVE; menor = REGREDIU</td></tr></tbody></table></div></section>
-</section>
-</main>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app.js"></script>
-<script src="robust-reader.js"></script>
-<script src="single-upload-fix.js"></script>
-<script src="all-disciplines-pp.js"></script>
-<script src="below-basic-disciplines.js"></script>
-<script src="tabs.js"></script>
-<script src="series-grouping.js"></script>
-<script src="assessment-tabs.js"></script>
-<script src="proficiency.js"></script>
+<script src="simple-app.js"></script>
 </body>
 </html>
