@@ -3,25 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Avaliações</title>
+<title>URE-SAT | Proficiência Escolar</title>
 <link rel="stylesheet" href="simple.css">
 </head>
 <body>
-<div class="wrap">
-<section class="hero"><h1>Avaliações</h1><p>Blocos independentes: Prova Paulista, SARESP, Diagnóstica e Consolidado.</p></section>
-<div class="tabs">
-<button class="tab-btn active" data-tab="pp">Prova Paulista</button>
-<button class="tab-btn" data-tab="saresp">SARESP</button>
+<header class="topbar">
+<div class="brand"><div class="brand-mark">URE<br><span>SAT</span></div><div><h1>Painel de Análise de Proficiência Escolar</h1><p>Unidade Regional de Ensino de Santo Anastácio</p></div></div>
+<button class="export-top" id="btn-xlsx-top">Exportar Relatórios</button>
+</header>
+<main class="wrap">
+<section class="hero"><div><span class="eyebrow">Gestão pedagógica</span><h2>SARESP, Diagnóstica e Prova Paulista</h2><p>Uploads separados por avaliação, relatórios de alunos abaixo do básico, gráficos e consolidado comparativo.</p></div><div class="hero-logo"><strong>URE-SAT</strong><small>Painel institucional</small></div></section>
+<nav class="tabs">
+<button class="tab-btn active" data-tab="saresp">SARESP</button>
 <button class="tab-btn" data-tab="diag">Diagnóstica</button>
+<button class="tab-btn" data-tab="pp">Prova Paulista</button>
 <button class="tab-btn" data-tab="cons">Consolidado</button>
-</div>
-<section class="panel active" id="pp"><h2>Prova Paulista</h2><p>Todas as disciplinas encontradas no arquivo.</p><div class="upload-box"><strong>Anexar dados da Prova Paulista</strong><input type="file" id="file-pp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="pp">Analisar Prova Paulista</button><div id="msg-pp" class="msg">Aguardando arquivo.</div><div id="out-pp"></div></section>
-<section class="panel" id="saresp"><h2>SARESP</h2><p>Todas as disciplinas encontradas no arquivo.</p><div class="upload-box"><strong>Anexar dados do SARESP</strong><input type="file" id="file-saresp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="saresp">Analisar SARESP</button><div id="msg-saresp" class="msg">Aguardando arquivo.</div><div id="out-saresp"></div></section>
-<section class="panel" id="diag"><h2>Diagnóstica / Paramaran</h2><p>Somente Língua Portuguesa e Matemática.</p><div class="upload-box"><strong>Anexar dados da Diagnóstica</strong><input type="file" id="file-diag" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="diag">Analisar Diagnóstica</button><div id="msg-diag" class="msg">Aguardando arquivo.</div><div id="out-diag"></div></section>
-<section class="panel" id="cons"><h2>Consolidado</h2><p>Comparativo entre as avaliações analisadas.</p><button class="btn secondary" id="btn-cons">Gerar Consolidado</button><button class="btn" id="btn-xlsx">Exportar Excel</button><div id="msg-cons" class="msg">Analise pelo menos uma avaliação.</div><div id="out-cons"></div></section>
-</div>
+</nav>
+<section class="panel active" id="saresp"><div class="panel-head"><div><h2>SARESP</h2><p>Todas as disciplinas encontradas no arquivo.</p></div><span class="badge blue">Upload próprio</span></div><div class="upload-box"><div><strong>Anexar dados do SARESP</strong><p>Arquivos aceitos: .xlsx, .xls, .csv ou .zip.</p></div><input type="file" id="file-saresp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="saresp">Analisar SARESP</button><div id="msg-saresp" class="msg">Aguardando arquivo.</div><div id="out-saresp"></div></section>
+<section class="panel" id="diag"><div class="panel-head"><div><h2>Diagnóstica</h2><p>Somente Língua Portuguesa e Matemática.</p></div><span class="badge green">LP + MAT</span></div><div class="upload-box"><div><strong>Anexar dados da Diagnóstica</strong><p>Arquivos aceitos: .xlsx, .xls, .csv ou .zip.</p></div><input type="file" id="file-diag" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="diag">Analisar Diagnóstica</button><div id="msg-diag" class="msg">Aguardando arquivo.</div><div id="out-diag"></div></section>
+<section class="panel" id="pp"><div class="panel-head"><div><h2>Prova Paulista</h2><p>Todas as disciplinas encontradas no arquivo.</p></div><span class="badge orange">Todas as disciplinas</span></div><div class="upload-box"><div><strong>Anexar dados da Prova Paulista</strong><p>Arquivos aceitos: .xlsx, .xls, .csv ou .zip.</p></div><input type="file" id="file-pp" multiple accept=".xlsx,.xls,.csv,.zip"></div><button class="btn" data-analyze="pp">Analisar Prova Paulista</button><div id="msg-pp" class="msg">Aguardando arquivo.</div><div id="out-pp"></div></section>
+<section class="panel" id="cons"><div class="panel-head"><div><h2>Consolidado</h2><p>Comparativo entre as avaliações analisadas.</p></div><span class="badge dark">SARESP x PP</span></div><div class="actions"><button class="btn secondary" id="btn-cons">Gerar Consolidado</button><button class="btn" id="btn-xlsx">Exportar Excel</button></div><div id="msg-cons" class="msg">Analise pelo menos uma avaliação.</div><div id="out-cons"></div></section>
+</main>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="simple-app.js"></script>
 </body>
 </html>
