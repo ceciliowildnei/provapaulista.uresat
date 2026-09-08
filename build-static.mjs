@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 await mkdir('dist', { recursive: true });
 
-const [html, p1, p2, p3, p4, removeMultiplica, layout, stability, compat, analysisSync] = await Promise.all([
+const [html, p1, p2, p3, p4, removeMultiplica, layout, stability, compat, turmaManager, analysisSync] = await Promise.all([
   readFile('index.html', 'utf8'),
   readFile('manual-capture-v3-part1.js', 'utf8'),
   readFile('manual-capture-v3-part2.js', 'utf8'),
@@ -12,6 +12,7 @@ const [html, p1, p2, p3, p4, removeMultiplica, layout, stability, compat, analys
   readFile('manual-layout-fix.js', 'utf8'),
   readFile('ui-stability-fix.js', 'utf8'),
   readFile('connector-compat.js', 'utf8'),
+  readFile('turma-capture-manager.js', 'utf8'),
   readFile('manual-analysis-sync.js', 'utf8')
 ]);
 
@@ -25,6 +26,7 @@ new Function(removeMultiplica);
 new Function(layout);
 new Function(stability);
 new Function(compat);
+new Function(turmaManager);
 new Function(analysisSync);
 
 const requiredSources = ['superbi','alunoPresente','recomposicao','pp1','pp2','pp3','pda','professorTutor'];
@@ -37,10 +39,12 @@ if (/multiplica\s*:\s*\{\s*label\s*:\s*['"]Multiplica/i.test(manual)) {
 if (!manual.includes('DIAG_CAPTURE_CURRENT_VIEW')) throw new Error('Manual current-view capture protocol missing.');
 if (!manual.includes('df-manual-captures-v3')) throw new Error('Manual capture persistence missing.');
 if (!manual.includes('df-manual-capture-saved')) throw new Error('Manual analysis save notification missing.');
+if (!turmaManager.includes('df-turma-captures-v1')) throw new Error('Turma-by-turma capture persistence missing.');
+if (!turmaManager.includes('Resetar dados')) throw new Error('Data reset control missing.');
 if (!analysisSync.includes('ESCOLA_TOTAL_CAPTURE_DATA')) throw new Error('Manual analysis live merge bridge missing.');
 if (!analysisSync.includes('df-inteligencia-v2')) throw new Error('Manual analysis persistence bridge missing.');
 
-const built = html.replace(marker, `<script>\n${manual}\n</script><script>\n${removeMultiplica}\n</script><script>\n${layout}\n</script><script>\n${stability}\n</script><script>\n${compat}\n</script><script>\n${analysisSync}\n</script><script>`);
+const built = html.replace(marker, `<script>\n${manual}\n</script><script>\n${removeMultiplica}\n</script><script>\n${layout}\n</script><script>\n${stability}\n</script><script>\n${compat}\n</script><script>\n${turmaManager}\n</script><script>\n${analysisSync}\n</script><script>`);
 await writeFile('dist/index.html', built, 'utf8');
 
-console.log('Diagnostico Facil build validated: capture, persistence, live analysis sync, required sources, Multiplica removed.');
+console.log('Diagnostico Facil build validated: capture, turma-by-turma workflow, reset, persistence, live analysis sync, required sources, Multiplica removed.');
