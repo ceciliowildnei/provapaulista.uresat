@@ -29,7 +29,7 @@
 
   const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
   const fold=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  const esc=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const now=()=>new Date().toISOString();
   const fmt=v=>{try{return new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}catch{return clean(v)}};
   const rid=p=>`${p}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
