@@ -10,8 +10,6 @@
   let restoreToken=0;
   let sourceCaptureUntil=0;
 
-  // The legacy app still creates an 8s heartbeat. In manual mode it is throttled
-  // and must never be a reason to rebuild the page.
   window.setInterval=function(fn,delay,...args){
     const src=typeof fn==='function'?Function.prototype.toString.call(fn):String(fn||'');
     if((delay===4000||delay===8000)&&src.includes('DIAG_REQUEST_PING')) return nativeSetInterval(fn,30000,...args);
@@ -34,9 +32,6 @@
     }));
   }
 
-  // This listener is loaded after Manual Capture V3 but before the legacy app.
-  // Manual V3 receives the event first; then this guard prevents the old app from
-  // reacting with app.innerHTML and resetting scroll/focus.
   window.addEventListener('message',e=>{
     if(e.source!==window)return;
     const d=e.data;if(!d||typeof d!=='object')return;
@@ -50,6 +45,11 @@
       return;
     }
     if(d.source!==EXT)return;
+
+    if(d.__manualAnalysisSync===true){
+      preserveScroll();
+      return;
+    }
 
     if(['DF_SOURCE_SESSION_COMPLETE','DF_SOURCE_SESSION_ERROR','DF_SOURCE_SESSION_UNAVAILABLE'].includes(type)){
       sourceCaptureUntil=0;preserveScroll();
@@ -67,15 +67,11 @@
 
     if(legacyRenderEvents.has(type))preserveScroll();
 
-    // Manual V3 owns all these updates. The old application is not allowed to
-    // receive them and recreate #app after the manual handler has processed them.
     if(manualMode&&legacyRenderEvents.has(type)){
       e.stopImmediatePropagation();
       return;
     }
 
-    // During a current-view capture also suppress any unexpected context/catalog
-    // echo from older connector versions.
     if(Date.now()<sourceCaptureUntil&&['DF_SESSION','DF_CATALOG','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','DF_PROFILE','DF_SCHOOL_SYNC','ESCOLA_TOTAL_SCHOOL_SELECTED'].includes(type)){
       e.stopImmediatePropagation();
     }
