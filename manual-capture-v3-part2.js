@@ -37,7 +37,7 @@
     const anchor=main.querySelector('.filters')||main.querySelector('.hero');
     host=document.createElement('section');host.id='df-session-center';
     host.innerHTML=`<div class="dfso-head"><div><h2>Captura manual guiada</h2><p>Você controla o Escola Total. O Diagnóstico somente lê e salva a tela que ficou aberta.</p></div><span class="dfso-badge">Aguardando conexão</span></div><div class="dfso-controls"><button data-session-action="connect">Conectar Escola Total</button></div><div class="dfso-source-grid">${[
-      ['superbi','📊','Super BI'],['alunoPresente','🧑‍🎓','Aluno Presente'],['recomposicao','🧩','Recomposição'],['provaPaulista','📝','Provas Paulistas'],['multiplica','✳️','Multiplica'],['pra','🎯','PDA'],['professorTutor','👩‍🏫','Professor Tutor']
+      ['superbi','📊','Super BI'],['alunoPresente','🧑‍🎓','Aluno Presente'],['recomposicao','🧩','Recomposição'],['provaPaulista','📝','Provas Paulistas'],['pra','🎯','PDA'],['professorTutor','👩‍🏫','Professor Tutor']
     ].map(([id,icon,label])=>`<article class="dfso-card pending"><div class="dfso-title"><span>${icon}</span><b>${label}</b><span class="dfso-state">○ Pendente</span></div><p>Abra esta fonte no Escola Total, aguarde os dados e volte para capturar.</p><div class="dfso-meta"><span>0 registros</span><span>0 conjunto(s)</span></div><button data-session-source="${id}">Capturar tela atual</button></article>`).join('')}</div><div class="dfso-overview"></div>`;
     if(anchor)anchor.insertAdjacentElement('afterend',host);else main.prepend(host);
     return host;
