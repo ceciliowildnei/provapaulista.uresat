@@ -4,12 +4,13 @@
   window.__DF_UI_STABILITY_FIX__=true;
 
   const EXT='ure-sat-conector';
+  const SITE='diagnostico-facil';
   const nativeSetInterval=window.setInterval.bind(window);
   const seen=new Map();
   let lastUserMove=0;
   let restoreToken=0;
+  let sourceCaptureUntil=0;
 
-  // Reduce background heartbeats that were causing the legacy app to rebuild the whole UI.
   window.setInterval=function(fn,delay,...args){
     const src=typeof fn==='function'?Function.prototype.toString.call(fn):String(fn||'');
     if((delay===4000||delay===8000)&&src.includes('DIAG_REQUEST_PING')){
@@ -52,15 +53,36 @@
     }));
   }
 
-  // This listener is registered before the legacy application listener.
-  // Identical connection/catalog events are discarded so they cannot trigger app.innerHTML repeatedly.
+  // Registered before the legacy app. During a new session capture we suppress
+  // catalog/session echoes because the old app would rebuild #app and reset the page.
   window.addEventListener('message',e=>{
     if(e.source!==window)return;
     const d=e.data;
-    if(!d||typeof d!=='object'||d.source!==EXT)return;
+    if(!d||typeof d!=='object')return;
 
-    const type=String(d.type||'');
-    const renderTypes=new Set(['DF_SESSION','DF_CATALOG','DF_READY','DF_PROFILE','DF_SCHOOL_SYNC','DF_CAPTURE_PROGRESS','DF_DATA','DF_CAPTURE_COMPLETE','DF_ERROR','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','ESCOLA_TOTAL_SCHOOL_SELECTED','ESCOLA_TOTAL_FULL_CAPTURE_PROGRESS','ESCOLA_TOTAL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_COMPLETE','ESCOLA_TOTAL_ERROR']);
+    const type=String(d.type||d.event||'');
+
+    if(d.source===SITE){
+      if(type==='DIAG_REQUEST_SOURCE_SESSION'){
+        sourceCaptureUntil=Date.now()+270000;
+        preserveScroll();
+      }
+      return;
+    }
+
+    if(d.source!==EXT)return;
+
+    if(['DF_SOURCE_SESSION_COMPLETE','DF_SOURCE_SESSION_ERROR','DF_SOURCE_SESSION_UNAVAILABLE'].includes(type)){
+      sourceCaptureUntil=0;
+      preserveScroll();
+    }
+
+    if(Date.now()<sourceCaptureUntil && ['DF_SESSION','DF_CATALOG','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','DF_PROFILE','DF_SCHOOL_SYNC','ESCOLA_TOTAL_SCHOOL_SELECTED'].includes(type)){
+      e.stopImmediatePropagation();
+      return;
+    }
+
+    const renderTypes=new Set(['DF_SESSION','DF_CATALOG','DF_READY','DF_PROFILE','DF_SCHOOL_SYNC','DF_CAPTURE_PROGRESS','DF_DATA','DF_CAPTURE_COMPLETE','DF_ERROR','DF_SOURCE_SESSION_PROGRESS','DF_SOURCE_SESSION_DATA','DF_SOURCE_SESSION_COMPLETE','DF_SOURCE_SESSION_ERROR','DF_SOURCE_SESSION_UNAVAILABLE','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','ESCOLA_TOTAL_SCHOOL_SELECTED','ESCOLA_TOTAL_FULL_CAPTURE_PROGRESS','ESCOLA_TOTAL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_COMPLETE','ESCOLA_TOTAL_ERROR']);
     if(renderTypes.has(type))preserveScroll();
 
     const sig=stableSignature(d);
