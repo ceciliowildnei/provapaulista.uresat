@@ -18,18 +18,18 @@
     pp1:{label:'Prova Paulista 1',mode:'prova-paulista',cardId:'provaPaulista',pp:true,guide:['Abra a Prova Paulista correspondente à PP1.','Escolha manualmente a escola e filtros.','Aguarde os resultados.','Volte e capture PP1.']},
     pp2:{label:'Prova Paulista 2',mode:'prova-paulista',cardId:'provaPaulista',pp:true,guide:['Abra a Prova Paulista correspondente à PP2.','Escolha manualmente a escola e filtros.','Aguarde os resultados.','Volte e capture PP2.']},
     pp3:{label:'Prova Paulista 3',mode:'prova-paulista',cardId:'provaPaulista',pp:true,guide:['Abra a Prova Paulista correspondente à PP3.','Escolha manualmente a escola e filtros.','Aguarde os resultados.','Volte e capture PP3.']},
-    multiplica:{label:'Multiplica',mode:'multiplica',cardId:'multiplica',guide:['Abra o Escola Total.','Entre em Multiplica.','Escolha manualmente a escola/filtros.','Aguarde a tabela carregar.','Volte e capture.']},
     pda:{label:'PDA',mode:'pda',cardId:'pra',guide:['Abra o Escola Total.','Abra PDA / Plano de Ação / Planejamento.','Escolha manualmente a escola.','Aguarde o painel carregar.','Volte e capture.']},
     professorTutor:{label:'Professor Tutor',mode:'professor-tutor',cardId:'professorTutor',conditional:true,guide:['Se a escola possui Professor Tutor, abra essa fonte no Escola Total.','Selecione manualmente a escola/filtros.','Aguarde a tabela carregar.','Volte e capture.','Se a escola não possui o projeto, use o botão Não se aplica.']}
   };
-  const topIds=['superbi','alunoPresente','recomposicao','pp1','pp2','pp3','multiplica','pda','professorTutor'];
+  const topIds=['superbi','alunoPresente','recomposicao','pp1','pp2','pp3','pda','professorTutor'];
   let latest={};try{latest=JSON.parse(localStorage.getItem(META_STORE)||'{}')||{}}catch{latest={}}
+  if(latest.multiplica){delete latest.multiplica;try{localStorage.setItem(META_STORE,JSON.stringify(latest));}catch{}}
   const errors=new Map();
   let active=null,loggedIn=false,renderTimer=null,dbPromise=null;
 
   const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
   const fold=v=>clean(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  const esc=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const now=()=>new Date().toISOString();
   const fmt=v=>{try{return new Date(v).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}catch{return clean(v)}};
   const rid=p=>`${p}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
