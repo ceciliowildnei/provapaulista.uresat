@@ -32,7 +32,15 @@
     }
     const flat=flattenRows(data);const school=inferSchool(data),ure=inferUre(data),timestamp=now();
     const capture={captureId:data?.captureId||rid(`capture-${sourceId}`),sourceId,sourceLabel:defs[sourceId].label,school,ure,year:YEAR,timestamp,coverage:coverageOf(data,coverage),records,datasets:data?.datasets||{},rawHeaders:headersFrom(flat),rawRows:flat.slice(0,2000),rawRowsTruncated:flat.length>2000,normalizedRows:flat.slice(0,5000),normalizedRowsTruncated:flat.length>5000,diagnostics:data?.diagnostics||{},powerbi:data?.powerbi||{},sourceUrl:clean(data?.context?.sourceUrl||''),privacy:data?.privacy||{passwordsRead:false,cookiesRead:false,tokensRead:false,authStorageRead:false}};
-    try{if(active&&active.sourceId===sourceId){active.text='Salvando captura...';paintSlot(sourceId);}await persistCapture(capture);loggedIn=true;errors.delete(sourceId);active=null;schedule();}
+    try{
+      if(active&&active.sourceId===sourceId){active.text='Salvando captura...';paintSlot(sourceId);}
+      await persistCapture(capture);
+      loggedIn=true;
+      errors.delete(sourceId);
+      active=null;
+      window.dispatchEvent(new CustomEvent('df-manual-capture-saved',{detail:{sourceId,captureId:capture.captureId,records:capture.records,timestamp:capture.timestamp}}));
+      schedule();
+    }
     catch(error){active=null;errors.set(sourceId,{message:'Os dados foram lidos, mas não consegui confirmar o salvamento local. A captura anterior foi preservada.',technical:String(error?.message||error)});schedule();}
   }
 
