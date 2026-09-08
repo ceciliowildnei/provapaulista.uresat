@@ -7,7 +7,7 @@
   }
 
   function ensureCards(){
-    for(const id of ['superbi','alunoPresente','recomposicao','multiplica','pda','professorTutor']){
+    for(const id of ['superbi','alunoPresente','recomposicao','pda','professorTutor']){
       const card=cardBySlot(id);if(!card)continue;const d=defs[id];
       setText(card.querySelector('.dfso-title b'),d.label);
       const old=card.querySelector(`[data-session-source="${d.cardId}"]`);if(old){old.dataset.manualCapture=id;old.disabled=false;setText(old,'Capturar tela atual');}
