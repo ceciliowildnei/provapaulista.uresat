@@ -4,6 +4,7 @@
   window.__DF_MANUAL_ANALYSIS_SYNC__=true;
 
   const DB_NAME='df-manual-captures-v3';
+  const TURMA_DB='df-turma-captures-v1';
   const DB_VERSION=1;
   const LEGACY_STORE='df-inteligencia-v2';
   const SOURCE_MAP={
@@ -41,9 +42,9 @@
   const rowText=row=>fold(Object.entries(row||{}).filter(([k])=>!k.startsWith('__')).map(([k,v])=>`${k} ${v}`).join(' '));
   const hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o||{},k);
 
-  function openDb(){
+  function openDb(name){
     return new Promise((resolve,reject)=>{
-      const req=indexedDB.open(DB_NAME,DB_VERSION);
+      const req=indexedDB.open(name,DB_VERSION);
       req.onupgradeneeded=()=>{
         const db=req.result;
         if(!db.objectStoreNames.contains('captures')){
@@ -51,6 +52,7 @@
           store.createIndex('sourceId','sourceId',{unique:false});
           store.createIndex('timestamp','timestamp',{unique:false});
           store.createIndex('school','school',{unique:false});
+          if(name===TURMA_DB)store.createIndex('turma','turma',{unique:false});
         }
       };
       req.onsuccess=()=>resolve(req.result);
@@ -58,14 +60,21 @@
     });
   }
 
+  async function readDbCaptures(name){
+    try{
+      const db=await openDb(name);
+      return await new Promise((resolve,reject)=>{
+        const tx=db.transaction('captures','readonly');
+        const req=tx.objectStore('captures').getAll();
+        req.onsuccess=()=>resolve(Array.isArray(req.result)?req.result:[]);
+        req.onerror=()=>reject(req.error||new Error('Falha ao ler capturas para análise.'));
+      });
+    }catch{return[];}
+  }
+
   async function readAllCaptures(){
-    const db=await openDb();
-    return await new Promise((resolve,reject)=>{
-      const tx=db.transaction('captures','readonly');
-      const req=tx.objectStore('captures').getAll();
-      req.onsuccess=()=>resolve(Array.isArray(req.result)?req.result:[]);
-      req.onerror=()=>reject(req.error||new Error('Falha ao ler capturas para análise.'));
-    });
+    const [manual,turmas]=await Promise.all([readDbCaptures(DB_NAME),readDbCaptures(TURMA_DB)]);
+    return [...manual,...turmas];
   }
 
   function captureRows(capture){
@@ -84,10 +93,12 @@
     const hasSchool=keys.some(k=>/^(escola|unidade escolar|nome da escola)$/i.test(clean(k)));
     const hasTurma=keys.some(k=>/^(turma|classe|sala|turma atual)$/i.test(clean(k)));
     if(!hasSchool&&capture?.school&&fold(capture.school)!=='nao identificada')out.Escola=capture.school;
-    if(!hasTurma&&capture?.context?.turma)out.Turma=capture.context.turma;
+    const captureTurma=clean(capture?.turma||capture?.context?.turma||'');
+    if(!hasTurma&&captureTurma)out.Turma=captureTurma;
     if(capture?.ure&&!hasOwn(out,'URE'))out.URE=capture.ure;
     out.__manualSource=capture?.sourceId||'';
     out.__capturedAt=capture?.timestamp||'';
+    if(capture?.turmaCapture)out.__turmaCapture='1';
     return out;
   }
 
@@ -126,12 +137,13 @@
     return buckets;
   }
 
-  function newestPerSourceSchool(captures){
+  function newestCaptures(captures){
     const chosen=new Map();
     for(const capture of captures){
       if(!SOURCE_MAP[capture?.sourceId]||!capture?.records)continue;
       const school=fold(capture.school||'nao-identificada');
-      const key=`${capture.sourceId}|${school}`;
+      const turma=capture?.turmaCapture?fold(capture.turma||'turma-nao-identificada'):'__school__';
+      const key=`${capture.sourceId}|${school}|${turma}`;
       const prev=chosen.get(key);
       const t=Date.parse(capture.timestamp||0)||0;
       const pt=Date.parse(prev?.timestamp||0)||0;
@@ -142,7 +154,7 @@
 
   function toDatasets(captures){
     const datasets={};
-    for(const capture of newestPerSourceSchool(captures)){
+    for(const capture of newestCaptures(captures)){
       const sourceId=capture.sourceId;
       const baseKey=SOURCE_MAP[sourceId];
       const rows=dedupe(captureRows(capture).map(row=>normalizeRow(row,capture)));
@@ -157,7 +169,8 @@
           rows:dedupe([...current,...partRows]),
           coverage:capture.coverage||'complete',
           capturedAt:capture.timestamp||now(),
-          manual:true
+          manual:true,
+          includesTurmaCaptures:true
         };
       }
     }
@@ -170,7 +183,7 @@
     try{current=JSON.parse(localStorage.getItem(LEGACY_STORE)||'{}')||{};}catch{current={};}
     const summary=current.biSummary&&typeof current.biSummary==='object'?current.biSummary:{};
     summary.datasets={...(summary.datasets||{}),...datasets};
-    summary.manualAnalysisSync={updatedAt:now(),datasetKeys:Object.keys(datasets)};
+    summary.manualAnalysisSync={updatedAt:now(),datasetKeys:Object.keys(datasets),includesTurmaCaptures:true};
     localStorage.setItem(LEGACY_STORE,JSON.stringify({biSummary:summary}));
   }
 
@@ -181,7 +194,7 @@
       type:'ESCOLA_TOTAL_CAPTURE_DATA',
       requestId:`analysis-sync-${Date.now()}`,
       __manualAnalysisSync:true,
-      payload:{datasets,manualAnalysisSync:true}
+      payload:{datasets,manualAnalysisSync:true,includesTurmaCaptures:true}
     },location.origin);
     return true;
   }
@@ -196,7 +209,7 @@
     if(host&&keys.length){
       const rows=keys.reduce((n,k)=>n+(datasets[k]?.rows?.length||0),0);
       host.dataset.analysisSynced='1';
-      host.title=`Análise sincronizada com ${keys.length} conjunto(s) e ${rows} registro(s).`;
+      host.title=`Análise sincronizada com ${keys.length} conjunto(s) e ${rows} registro(s), incluindo capturas por turma.`;
     }
   }
 
@@ -216,7 +229,7 @@
       paintStatus(datasets);
       lastHash=hash;
       const rows=Object.values(datasets).reduce((n,d)=>n+(d?.rows?.length||0),0);
-      window.__DF_ANALYSIS_SYNC_STATUS__={ok:true,reason,datasets:Object.keys(datasets).length,rows,live,updatedAt:now()};
+      window.__DF_ANALYSIS_SYNC_STATUS__={ok:true,reason,datasets:Object.keys(datasets).length,rows,live,includesTurmaCaptures:true,updatedAt:now()};
       window.dispatchEvent(new CustomEvent('df-analysis-synced',{detail:window.__DF_ANALYSIS_SYNC_STATUS__}));
     }catch(error){
       window.__DF_ANALYSIS_SYNC_STATUS__={ok:false,reason,error:String(error?.message||error),updatedAt:now()};
@@ -231,6 +244,7 @@
 
   window.__DF_SYNC_ANALYSIS_NOW__=()=>sync('manual-api');
   window.addEventListener('df-manual-capture-saved',()=>schedule('capture-saved',80));
+  window.addEventListener('df-turma-capture-saved',()=>schedule('turma-capture-saved',80));
   window.addEventListener('storage',e=>{if(e.key==='df-manual-capture-meta-v3')schedule('storage-change',120);});
   window.addEventListener('message',e=>{
     const d=e.data;
