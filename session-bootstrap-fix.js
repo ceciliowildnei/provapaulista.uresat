@@ -71,5 +71,4 @@
 
   setTimeout(()=>{render();post('DIAG_REQUEST_SESSION');},300);
   setTimeout(()=>render(),1200);
-  setInterval(render,2500);
 })();
