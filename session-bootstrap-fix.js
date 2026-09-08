@@ -1,5 +1,6 @@
 (()=>{
   'use strict';
+  if(window.__DF_MANUAL_CAPTURE_MODE__)return;
   if(window.__DF_BOOTSTRAP_FIX_V1__)return;
   window.__DF_BOOTSTRAP_FIX_V1__=true;
 
