@@ -5,7 +5,22 @@
     setText(document.getElementById('df-overview-analysis'),text);
   }
 
-  function apply(){ensureStyle();ensureShell();document.getElementById('df-bootstrap-box')?.remove();ensureManualInfo();ensureCards();for(const id of topIds)paintSlot(id);renderOverview();const connect=document.querySelector('#df-session-center [data-session-action="connect"]');if(connect){connect.style.display='inline-flex';setText(connect,loggedIn?'Escola Total conectado':'Conectar Escola Total');}const badge=document.querySelector('#df-session-center .dfso-badge');if(badge){badge.classList.toggle('ok',loggedIn);setText(badge,loggedIn?'Escola Total conectado':'Aguardando conexão');}}
+  function syncTopStatus(){
+    const pills=[...document.querySelectorAll('#app .top .status .pill')];
+    const sessionPill=pills.find(el=>/Escola Total|Aguardando login/i.test(el.textContent||''));
+    const hasSaved=topIds.some(id=>latest[id]?.status==='saved');
+    if(sessionPill){
+      sessionPill.classList.toggle('ok',loggedIn);
+      const i=sessionPill.querySelector('i');
+      sessionPill.innerHTML='';
+      if(i)sessionPill.appendChild(i);else{const dot=document.createElement('i');sessionPill.appendChild(dot);}
+      sessionPill.append(document.createTextNode(loggedIn?'Escola Total conectado':hasSaved?'Escola Total disponível':'Aguardando login'));
+    }
+    const topConnect=[...document.querySelectorAll('#app .top .status button[data-a="connect"]')][0];
+    if(topConnect)setText(topConnect,loggedIn?'Abrir Escola Total':'Conectar Escola Total');
+  }
+
+  function apply(){ensureStyle();ensureShell();document.getElementById('df-bootstrap-box')?.remove();ensureManualInfo();ensureCards();for(const id of topIds)paintSlot(id);renderOverview();const connect=document.querySelector('#df-session-center [data-session-action="connect"]');if(connect){connect.style.display='inline-flex';setText(connect,loggedIn?'Escola Total conectado':'Conectar Escola Total');}const badge=document.querySelector('#df-session-center .dfso-badge');if(badge){badge.classList.toggle('ok',loggedIn);setText(badge,loggedIn?'Escola Total conectado':'Aguardando conexão');}syncTopStatus();}
   function schedule(){clearTimeout(renderTimer);renderTimer=setTimeout(apply,80);}
 
   function technicalFrom(d){const t=d?.payload?.technicalDetails||{};const pieces=[];if(t.apiReason)pieces.push(`API: ${t.apiReason}`);if(t.detectedDatasets?.length)pieces.push(`Conjuntos detectados: ${t.detectedDatasets.join(', ')}`);if(t.domDiagnostics)pieces.push(`DOM: ${JSON.stringify(t.domDiagnostics)}`);if(t.errors?.length)pieces.push(`Erros: ${t.errors.slice(0,6).map(x=>typeof x==='string'?x:JSON.stringify(x)).join(' | ')}`);return pieces.join('\n');}
@@ -17,7 +32,7 @@
     }
     const flat=flattenRows(data);const school=inferSchool(data),ure=inferUre(data),timestamp=now();
     const capture={captureId:data?.captureId||rid(`capture-${sourceId}`),sourceId,sourceLabel:defs[sourceId].label,school,ure,year:YEAR,timestamp,coverage:coverageOf(data,coverage),records,datasets:data?.datasets||{},rawHeaders:headersFrom(flat),rawRows:flat.slice(0,2000),rawRowsTruncated:flat.length>2000,normalizedRows:flat.slice(0,5000),normalizedRowsTruncated:flat.length>5000,diagnostics:data?.diagnostics||{},powerbi:data?.powerbi||{},sourceUrl:clean(data?.context?.sourceUrl||''),privacy:data?.privacy||{passwordsRead:false,cookiesRead:false,tokensRead:false,authStorageRead:false}};
-    try{if(active&&active.sourceId===sourceId){active.text='Salvando captura...';paintSlot(sourceId);}await persistCapture(capture);errors.delete(sourceId);active=null;schedule();}
+    try{if(active&&active.sourceId===sourceId){active.text='Salvando captura...';paintSlot(sourceId);}await persistCapture(capture);loggedIn=true;errors.delete(sourceId);active=null;schedule();}
     catch(error){active=null;errors.set(sourceId,{message:'Os dados foram lidos, mas não consegui confirmar o salvamento local. A captura anterior foi preservada.',technical:String(error?.message||error)});schedule();}
   }
 
@@ -41,12 +56,12 @@
 
   window.addEventListener('message',e=>{
     if(e.source!==window)return;const d=e.data;if(!d||typeof d!=='object'||d.source!==EXT)return;
-    if(d.type==='DF_SESSION'){const next=!!d.session?.loggedIn;if(next!==loggedIn){loggedIn=next;schedule();}return;}
+    if(d.type==='DF_SESSION'){const next=!!d.session?.loggedIn;if(next!==loggedIn){loggedIn=next;schedule();}else syncTopStatus();return;}
     if(d.type==='DF_READY'){schedule();return;}
     if(!active||d.requestId!==active.requestId)return;
     const id=active.sourceId;
     if(d.type==='DF_SOURCE_SESSION_PROGRESS'){const next=clean(d.progress?.text||d.stage||'Captando a tela atual...');if(next&&next!==active.text){active.text=next;paintSlot(id);}return;}
-    if(d.type==='DF_SOURCE_SESSION_DATA'){active.data=d.payload?.data||d.data||d.payload||{};return;}
+    if(d.type==='DF_SOURCE_SESSION_DATA'){loggedIn=true;active.data=d.payload?.data||d.data||d.payload||{};syncTopStatus();return;}
     if(d.type==='DF_SOURCE_SESSION_COMPLETE'){const data=d.payload?.data||d.data||active.data||{},coverage=clean(d.coverage||d.payload?.coverage||'complete');finalize(id,data,coverage);return;}
     if(d.type==='DF_SOURCE_SESSION_UNAVAILABLE'){active=null;errors.set(id,{message:'Esta fonte não está disponível na tela atual. Abra a fonte correta no Escola Total e tente novamente.',technical:technicalFrom(d)});schedule();return;}
     if(d.type==='DF_SOURCE_SESSION_ERROR'){active=null;errors.set(id,{message:clean(d.error||d.payload?.error||d.payload?.reason||'Não consegui localizar uma tabela carregada nesta tela.'),technical:technicalFrom(d)});schedule();return;}
