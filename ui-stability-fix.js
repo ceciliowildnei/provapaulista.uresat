@@ -6,16 +6,15 @@
   const EXT='ure-sat-conector';
   const SITE='diagnostico-facil';
   const nativeSetInterval=window.setInterval.bind(window);
-  const seen=new Map();
   let lastUserMove=0;
   let restoreToken=0;
   let sourceCaptureUntil=0;
 
+  // The legacy app still creates an 8s heartbeat. In manual mode it is throttled
+  // and must never be a reason to rebuild the page.
   window.setInterval=function(fn,delay,...args){
     const src=typeof fn==='function'?Function.prototype.toString.call(fn):String(fn||'');
-    if((delay===4000||delay===8000)&&src.includes('DIAG_REQUEST_PING')){
-      return nativeSetInterval(fn,30000,...args);
-    }
+    if((delay===4000||delay===8000)&&src.includes('DIAG_REQUEST_PING')) return nativeSetInterval(fn,30000,...args);
     return nativeSetInterval(fn,delay,...args);
   };
 
@@ -27,72 +26,58 @@
   const markUserMove=()=>{lastUserMove=Date.now();};
   ['wheel','touchstart','pointerdown','keydown'].forEach(type=>window.addEventListener(type,markUserMove,{capture:true,passive:true}));
 
-  function stableSignature(d){
-    const t=String(d?.type||'');
-    if(t==='DF_SESSION'||t==='ESCOLA_TOTAL_SESSION'){
-      const s=d.session||d.payload?.session||{};
-      return JSON.stringify({t,loggedIn:!!s.loggedIn,ure:s.currentUre||'',school:s.currentSchool||'',scope:s.accessScope||s.profile?.accessScope||'',schools:[...(s.schools||[]),...(s.authorizedSchools||[]),...(s.profile?.associatedSchools||[])].map(String).sort()});
-    }
-    if(t==='DF_CATALOG'||t==='ESCOLA_TOTAL_CATALOG'){
-      const c=d.catalog||d.payload?.catalog||{};
-      return JSON.stringify({t,ure:c.selectedUre||'',school:c.selectedSchool||'',scope:c.accessScope||c.profile?.accessScope||'',schools:[...(c.schools||[]),...(c.profile?.associatedSchools||[])].map(String).sort(),needsBootstrap:!!c.needsBootstrap,error:String(c.error||'')});
-    }
-    if(t==='DF_READY'||t==='EXTRACTOR_READY')return JSON.stringify({t,version:d.version||d.extensionVersion||''});
-    if(t==='DF_ERROR'||t==='ESCOLA_TOTAL_ERROR')return JSON.stringify({t,error:String(d.error||d.payload?.error||'')});
-    return '';
-  }
-
   function preserveScroll(){
-    const y=window.scrollY;
-    const x=window.scrollX;
-    const token=++restoreToken;
+    const y=window.scrollY,x=window.scrollX,token=++restoreToken;
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      if(token!==restoreToken)return;
-      if(Date.now()-lastUserMove<350)return;
+      if(token!==restoreToken||Date.now()-lastUserMove<350)return;
       if(Math.abs(window.scrollY-y)>2||Math.abs(window.scrollX-x)>2)window.scrollTo(x,y);
     }));
   }
 
-  // Registered before the legacy app. During a new session capture we suppress
-  // catalog/session echoes because the old app would rebuild #app and reset the page.
+  // This listener is loaded after Manual Capture V3 but before the legacy app.
+  // Manual V3 receives the event first; then this guard prevents the old app from
+  // reacting with app.innerHTML and resetting scroll/focus.
   window.addEventListener('message',e=>{
     if(e.source!==window)return;
-    const d=e.data;
-    if(!d||typeof d!=='object')return;
-
+    const d=e.data;if(!d||typeof d!=='object')return;
     const type=String(d.type||d.event||'');
 
     if(d.source===SITE){
-      if(type==='DIAG_REQUEST_SOURCE_SESSION'){
+      if(type==='DIAG_CAPTURE_CURRENT_VIEW'||type==='DIAG_REQUEST_SOURCE_SESSION'){
         sourceCaptureUntil=Date.now()+270000;
         preserveScroll();
       }
       return;
     }
-
     if(d.source!==EXT)return;
 
     if(['DF_SOURCE_SESSION_COMPLETE','DF_SOURCE_SESSION_ERROR','DF_SOURCE_SESSION_UNAVAILABLE'].includes(type)){
-      sourceCaptureUntil=0;
-      preserveScroll();
+      sourceCaptureUntil=0;preserveScroll();
     }
 
-    if(Date.now()<sourceCaptureUntil && ['DF_SESSION','DF_CATALOG','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','DF_PROFILE','DF_SCHOOL_SYNC','ESCOLA_TOTAL_SCHOOL_SELECTED'].includes(type)){
+    const manualMode=!!window.__DF_MANUAL_CAPTURE_MODE_V3__;
+    const legacyRenderEvents=new Set([
+      'DF_SESSION','DF_CATALOG','DF_PROFILE','DF_SCHOOL_SYNC',
+      'DF_CAPTURE_PROGRESS','DF_DATA','DF_CAPTURE_COMPLETE','DF_ERROR',
+      'DF_SOURCE_SESSION_PROGRESS','DF_SOURCE_SESSION_DATA','DF_SOURCE_SESSION_COMPLETE','DF_SOURCE_SESSION_ERROR','DF_SOURCE_SESSION_UNAVAILABLE',
+      'ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','ESCOLA_TOTAL_SCHOOL_SELECTED',
+      'ESCOLA_TOTAL_FULL_CAPTURE_PROGRESS','ESCOLA_TOTAL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_COMPLETE','ESCOLA_TOTAL_ERROR',
+      'ESCOLA_TOTAL_DIAGNOSTIC','ESCOLA_TOTAL_LOGIN_REQUIRED'
+    ]);
+
+    if(legacyRenderEvents.has(type))preserveScroll();
+
+    // Manual V3 owns all these updates. The old application is not allowed to
+    // receive them and recreate #app after the manual handler has processed them.
+    if(manualMode&&legacyRenderEvents.has(type)){
       e.stopImmediatePropagation();
       return;
     }
 
-    const renderTypes=new Set(['DF_SESSION','DF_CATALOG','DF_READY','DF_PROFILE','DF_SCHOOL_SYNC','DF_CAPTURE_PROGRESS','DF_DATA','DF_CAPTURE_COMPLETE','DF_ERROR','DF_SOURCE_SESSION_PROGRESS','DF_SOURCE_SESSION_DATA','DF_SOURCE_SESSION_COMPLETE','DF_SOURCE_SESSION_ERROR','DF_SOURCE_SESSION_UNAVAILABLE','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','ESCOLA_TOTAL_SCHOOL_SELECTED','ESCOLA_TOTAL_FULL_CAPTURE_PROGRESS','ESCOLA_TOTAL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_COMPLETE','ESCOLA_TOTAL_ERROR']);
-    if(renderTypes.has(type))preserveScroll();
-
-    const sig=stableSignature(d);
-    if(!sig)return;
-    const now=Date.now();
-    const prev=seen.get(type);
-    if(prev&&prev.sig===sig&&now-prev.at<20000){
+    // During a current-view capture also suppress any unexpected context/catalog
+    // echo from older connector versions.
+    if(Date.now()<sourceCaptureUntil&&['DF_SESSION','DF_CATALOG','ESCOLA_TOTAL_SESSION','ESCOLA_TOTAL_CATALOG','DF_PROFILE','DF_SCHOOL_SYNC','ESCOLA_TOTAL_SCHOOL_SELECTED'].includes(type)){
       e.stopImmediatePropagation();
-      return;
     }
-    seen.set(type,{sig,at:now});
   },true);
 })();
