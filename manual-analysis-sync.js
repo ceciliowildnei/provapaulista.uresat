@@ -175,13 +175,14 @@
   }
 
   function applyToLiveAnalysis(datasets){
-    const api=window.__DF_ANALYSIS_INTERNAL__;
-    if(!api||typeof api.merge!=='function')return false;
-    const y=window.scrollY,x=window.scrollX;
-    const tab=api.state?.tab;
-    api.merge({datasets,__manualAnalysisSyncSilent:true,manualAnalysisSync:true});
-    if(api.state&&tab)api.state.tab=tab;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo(x,y)));
+    if(!Object.keys(datasets).length)return false;
+    window.postMessage({
+      source:'ure-sat-conector',
+      type:'ESCOLA_TOTAL_CAPTURE_DATA',
+      requestId:`analysis-sync-${Date.now()}`,
+      __manualAnalysisSync:true,
+      payload:{datasets,manualAnalysisSync:true}
+    },location.origin);
     return true;
   }
 
@@ -236,6 +237,6 @@
     if(e.source===window&&d?.source==='ure-sat-conector'&&d?.type==='DF_SOURCE_SESSION_COMPLETE')schedule('capture-complete',500);
   },true);
 
-  schedule('startup',250);
-  setTimeout(()=>{if(!lastHash)schedule('startup-retry',0);},1600);
+  schedule('startup',500);
+  setTimeout(()=>{if(!lastHash)schedule('startup-retry',0);},1800);
 })();
