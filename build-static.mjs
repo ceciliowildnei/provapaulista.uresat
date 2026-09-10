@@ -2,12 +2,13 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 await mkdir('dist', { recursive: true });
 
-const [html, p1, p2, p3, p4, removeMultiplica, layout, stability, compat, turmaManager, turmaCards, analysisSync, ppPersistence, externalAnalysisIngest, unifiedAnalysisLauncher, pedagogicalAnalysis, analysisExperience] = await Promise.all([
+const [html, p1, p2, p3, p4, professorPresente, removeMultiplica, layout, stability, compat, turmaManager, turmaCards, analysisSync, ppPersistence, externalAnalysisIngest, unifiedAnalysisLauncher, pedagogicalAnalysis, analysisExperience] = await Promise.all([
   readFile('index.html', 'utf8'),
   readFile('manual-capture-v3-part1.js', 'utf8'),
   readFile('manual-capture-v3-part2.js', 'utf8'),
   readFile('manual-capture-v3-part3.js', 'utf8'),
   readFile('manual-capture-v3-part4.js', 'utf8'),
+  readFile('professor-presente-capture.js', 'utf8'),
   readFile('manual-remove-multiplica.js', 'utf8'),
   readFile('manual-layout-fix.js', 'utf8'),
   readFile('ui-stability-fix.js', 'utf8'),
@@ -28,6 +29,7 @@ if (!html.includes(marker)) throw new Error('Main script marker not found in ind
 const manual = `${p1}\n${p2}\n${p3}\n${p4}`;
 
 new Function(manual);
+new Function(professorPresente);
 new Function(removeMultiplica);
 new Function(layout);
 new Function(stability);
@@ -45,12 +47,15 @@ const requiredSources = ['superbi','alunoPresente','recomposicao','pp1','pp2','p
 for (const source of requiredSources) {
   if (!manual.includes(source)) throw new Error(`Manual capture source missing: ${source}`);
 }
+if (!professorPresente.includes('professorPresente') || !professorPresente.includes('Professor Presente')) throw new Error('Professor Presente capture source missing.');
 if (/multiplica\s*:\s*\{\s*label\s*:\s*['"]Multiplica/i.test(manual)) {
   throw new Error('Multiplica must not exist in the active manual capture definitions.');
 }
 if (!manual.includes('DIAG_CAPTURE_CURRENT_VIEW')) throw new Error('Manual current-view capture protocol missing.');
 if (!manual.includes('df-manual-captures-v3')) throw new Error('Manual capture persistence missing.');
 if (!manual.includes('df-manual-capture-saved')) throw new Error('Manual analysis save notification missing.');
+if (!professorPresente.includes('DIAG_CAPTURE_CURRENT_VIEW')) throw new Error('Professor Presente current-view capture protocol missing.');
+if (!professorPresente.includes('df-manual-captures-v3')) throw new Error('Professor Presente persistence missing.');
 if (!turmaManager.includes('df-turma-captures-v1')) throw new Error('Turma-by-turma capture persistence missing.');
 if (!turmaManager.includes('Resetar dados')) throw new Error('Data reset control missing.');
 if (!turmaCards.includes('Turmas da escola')) throw new Error('Turma card view missing.');
@@ -63,7 +68,7 @@ if (!unifiedAnalysisLauncher.includes('__DF_GENERATE_UNIFIED_ANALYSIS__')) throw
 if (!pedagogicalAnalysis.includes('Análise Pedagógica')) throw new Error('Pedagogical analysis module missing.');
 if (!analysisExperience.includes('CADERNO DE LEITURA PEDAGÓGICA')) throw new Error('Distinct pedagogical analysis experience missing.');
 
-const built = html.replace(marker, `<script>\n${manual}\n</script><script>\n${removeMultiplica}\n</script><script>\n${layout}\n</script><script>\n${stability}\n</script><script>\n${compat}\n</script><script>\n${turmaManager}\n</script><script>\n${turmaCards}\n</script><script>\n${analysisSync}\n</script><script>\n${ppPersistence}\n</script><script>\n${externalAnalysisIngest}\n</script><script>\n${unifiedAnalysisLauncher}\n</script><script>\n${pedagogicalAnalysis}\n</script><script>\n${analysisExperience}\n</script><script>`);
+const built = html.replace(marker, `<script>\n${manual}\n</script><script>\n${professorPresente}\n</script><script>\n${removeMultiplica}\n</script><script>\n${layout}\n</script><script>\n${stability}\n</script><script>\n${compat}\n</script><script>\n${turmaManager}\n</script><script>\n${turmaCards}\n</script><script>\n${analysisSync}\n</script><script>\n${ppPersistence}\n</script><script>\n${externalAnalysisIngest}\n</script><script>\n${unifiedAnalysisLauncher}\n</script><script>\n${pedagogicalAnalysis}\n</script><script>\n${analysisExperience}\n</script><script>`);
 await writeFile('dist/index.html', built, 'utf8');
 
-console.log('Diagnostico Facil build validated: capture, turma cards, reset, persistence, PP1/PP2/PP3 protection, external extension ingestion, unified all-source analysis, live analysis sync, pedagogical analysis and distinct decision-oriented analysis experience.');
+console.log('Diagnostico Facil build validated: capture, Professor Presente, turma cards, reset, persistence, PP1/PP2/PP3 protection, external extension ingestion, unified all-source analysis, live analysis sync, pedagogical analysis and distinct decision-oriented analysis experience.');
