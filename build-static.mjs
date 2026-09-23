@@ -71,4 +71,8 @@ if (!analysisExperience.includes('CADERNO DE LEITURA PEDAGÓGICA')) throw new Er
 const built = html.replace(marker, `<script>\n${manual}\n</script><script>\n${professorPresente}\n</script><script>\n${removeMultiplica}\n</script><script>\n${layout}\n</script><script>\n${stability}\n</script><script>\n${compat}\n</script><script>\n${turmaManager}\n</script><script>\n${turmaCards}\n</script><script>\n${analysisSync}\n</script><script>\n${ppPersistence}\n</script><script>\n${externalAnalysisIngest}\n</script><script>\n${unifiedAnalysisLauncher}\n</script><script>\n${pedagogicalAnalysis}\n</script><script>\n${analysisExperience}\n</script><script>`);
 await writeFile('dist/index.html', built, 'utf8');
 
-console.log('Diagnostico Facil build validated: capture, Professor Presente, turma cards, reset, persistence, PP1/PP2/PP3 protection, external extension ingestion, unified all-source analysis, live analysis sync, pedagogical analysis and distinct decision-oriented analysis experience.');
+await mkdir('dist/super', { recursive: true });
+const superHtml = await readFile('super/index.html', 'utf8');
+await writeFile('dist/super/index.html', superHtml, 'utf8');
+
+console.log('Diagnostico Facil build validated: capture, Professor Presente, turma cards, reset, persistence, PP1/PP2/PP3 protection, external extension ingestion, unified all-source analysis, live analysis sync, pedagogical analysis and distinct decision-oriented analysis experience. SUPER Diagnostico Facil published at /super.');
