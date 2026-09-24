@@ -71,6 +71,13 @@ if (!analysisExperience.includes('CADERNO DE LEITURA PEDAGÓGICA')) throw new Er
 const built = html.replace(marker, `<script>\n${manual}\n</script><script>\n${professorPresente}\n</script><script>\n${removeMultiplica}\n</script><script>\n${layout}\n</script><script>\n${stability}\n</script><script>\n${compat}\n</script><script>\n${turmaManager}\n</script><script>\n${turmaCards}\n</script><script>\n${analysisSync}\n</script><script>\n${ppPersistence}\n</script><script>\n${externalAnalysisIngest}\n</script><script>\n${unifiedAnalysisLauncher}\n</script><script>\n${pedagogicalAnalysis}\n</script><script>\n${analysisExperience}\n</script><script>`);
 await writeFile('dist/index.html', built, 'utf8');
 
+await mkdir('dist/recomposicao', { recursive: true });
+const recomposicaoHtml = await readFile('public/recomposicao-vercel/index.html', 'utf8');
+const recomposicaoScript = recomposicaoHtml.match(/<script>([\s\S]*?)<\/script>/i)?.[1] || '';
+if (!recomposicaoScript) throw new Error('Recomposicao portal script missing.');
+new Function(recomposicaoScript);
+await writeFile('dist/recomposicao/index.html', recomposicaoHtml, 'utf8');
+
 await mkdir('dist/super', { recursive: true });
 const superHtml = await readFile('super/index.html', 'utf8');
 await writeFile('dist/super/index.html', superHtml, 'utf8');
