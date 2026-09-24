@@ -6,6 +6,14 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/recomposicao",
+      "destination": "/recomposicao/index.html"
+    },
+    {
+      "source": "/recomposicao/",
+      "destination": "/recomposicao/index.html"
+    },
+    {
       "source": "/super",
       "destination": "/super/index.html"
     },
