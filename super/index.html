@@ -58,11 +58,61 @@ app.innerHTML=html;bindFilters();bindActions()}
 function bindFilters(){[['fSchool','school'],['fGrade','grade'],['fSubject','subject'],['fPriority','priority']].forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.onchange=()=>{state.filters[k]=e.value==='Todas'||e.value==='Todos'?'':e.value;render()}});const q=document.getElementById('fQuery');if(q)q.oninput=()=>{if(state.tab==='prioritarios')render()};const c=document.getElementById('capture');if(c)c.onclick=captureCurrent}
 function bindActions(){const b=document.getElementById('saveCrit');if(b)b.onclick=()=>{state.criteria={avd:document.getElementById('cAvd').value,frequency:Number(document.getElementById('cFreq').value),pp:Number(document.getElementById('cPP').value),saresp:Number(document.getElementById('cSar').value),priority:Number(document.getElementById('cPri').value)};localStorage.setItem('superdf:criteria',JSON.stringify(state.criteria));render()};const j=document.getElementById('exportJson');if(j)j.onclick=()=>download('super-diagnostico-facil-uresat-backup.json',JSON.stringify({savedAt:new Date().toISOString(),criteria:state.criteria,schools:state.schools},null,2),'application/json');const c=document.getElementById('exportCsv');if(c)c.onclick=()=>{const rows=allScores().filter(r=>r.priority),head=['Escola','Turma','Estudante','RA','Componente','AvD1','AvD2','Frequencia','PP','SARESP','Pontos','Equivalencia'],csv=[head,...rows.map(r=>[r.school,r.turma,r.name,r.ra,r.subject==='math'?'Matemática':'Língua Portuguesa',r.avd1,r.avd2,r.frequency??'',r.pp??'',r.saresp??'',r.points,r.equivalence])].map(x=>x.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\n');download('super-diagnostico-prioritarios.csv','\ufeff'+csv,'text/csv')};}
 function download(n,t,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
-function captureCurrent(){window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_SOURCE_CAPTURE',mode:'expansao',requestId:'super-'+Date.now(),captureOptions:{iterateAllClasses:true,includeAllStudents:true,includeNames:true,includeRA:true,preservePreviousModules:true,returnPayloadToApp:true,schoolOnly:true}},'*')}
+let activeCaptureRequest='';
+function captureCurrent(){
+  activeCaptureRequest='super-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+  state.connector=state.connector||'ativo';
+  render();
+  window.postMessage({source:'diagnostico-facil',type:'DIAG_CAPTURE_CURRENT_VIEW',requestId:activeCaptureRequest,sessionId:'super-session-'+Date.now(),sessionSource:'superbi',sourceLabel:'Super BI',mode:'super-bi',year:2026,manualCapture:true},location.origin);
+}
 function saveSchool(summary){const school=infer(summary);if(!school)return;const id=fold(school).toLowerCase().replace(/[^a-z0-9]+/g,'-');state.schools[id]={id,schoolName:school,updatedAt:new Date().toISOString(),summary:{...summary,schoolName:school,datasets:datasets(summary.datasets),studentRows:rebuild(summary)}};localStorage.setItem('superdf:schools',JSON.stringify(state.schools));render()}
 function migrate(){try{state.criteria={...state.criteria,...JSON.parse(localStorage.getItem('superdf:criteria')||'{}')}}catch{}try{state.schools=JSON.parse(localStorage.getItem('superdf:schools')||'{}')}catch{}try{const x=JSON.parse(localStorage.getItem('df:vercel:original:v1')||'null');if(x&&infer(x))saveSchool(x)}catch{}try{const idx=JSON.parse(localStorage.getItem('df:vercel:schools:index:v1')||'[]');for(const i of idx){try{const x=JSON.parse(localStorage.getItem('df:vercel:school:'+i.id)||'null');if(x&&infer(x))saveSchool(x)}catch{}}}catch{}}
-window.addEventListener('message',e=>{const d=e.data||{};if(!['diagnostico-facil-extrator','escola-total-extrator','ure-sat-conector','ure-sat-escola-total'].includes(d.source))return;if(d.type==='EXTRACTOR_READY'){state.connector=d.version||'detectado';render();return}if(['ESCOLA_TOTAL_DATA','ESCOLA_TOTAL_MODULE_DATA','ESCOLA_TOTAL_COMBO_DATA','ESCOLA_TOTAL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_COMPLETE'].includes(d.type)&&d.payload){const p=d.payload,s=p.biSummary||p.analysis||p.summary||(p.datasets||p.studentRows?p:null);if(s&&!s.regionMode)saveSchool(s)}});
-setInterval(()=>window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_PING'},'*'),2500);
-migrate();render();window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_PING'},'*');
+window.addEventListener('message',e=>{
+  if(e.source!==window)return;
+  const d=e.data||{};
+  if(!['diagnostico-facil-extrator','escola-total-extrator','ure-sat-conector','ure-sat-escola-total'].includes(d.source))return;
+  if(d.type==='DF_READY'){
+    state.connector=d.version||d.extensionVersion||d.manifest?.version||'ativo';
+    render();
+    window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_SESSION',requestId:'super-session-'+Date.now()},location.origin);
+    return;
+  }
+  if(d.type==='DF_SESSION'){
+    if(d.session?.loggedIn) state.connector=d.version||d.extensionVersion||state.connector||'ativo';
+    render();
+    return;
+  }
+  if(d.type==='EXTRACTOR_READY'){
+    state.connector=d.version||'ativo';
+    render();
+    return;
+  }
+  if(activeCaptureRequest&&d.requestId===activeCaptureRequest&&d.type==='DF_SOURCE_SESSION_DATA'){
+    const x=d.payload?.data||d.data||d.payload||{};
+    if(x&&typeof x==='object'){
+      const s=x.biSummary||x.analysis||x.summary||(x.datasets||x.studentRows?x:null);
+      if(s&&!s.regionMode)saveSchool(s);
+    }
+    return;
+  }
+  if(activeCaptureRequest&&d.requestId===activeCaptureRequest&&d.type==='DF_SOURCE_SESSION_COMPLETE'){
+    const x=d.payload?.data||d.data||{};
+    const s=x.biSummary||x.analysis||x.summary||(x.datasets||x.studentRows?x:null);
+    if(s&&!s.regionMode)saveSchool(s);
+    activeCaptureRequest='';
+    return;
+  }
+  if(activeCaptureRequest&&d.requestId===activeCaptureRequest&&d.type==='DF_SOURCE_SESSION_ERROR'){
+    activeCaptureRequest='';
+    alert(d.error||d.payload?.error||d.payload?.reason||'Não foi possível captar a tela atual do Escola Total.');
+    return;
+  }
+  if(['ESCOLA_TOTAL_DATA','ESCOLA_TOTAL_MODULE_DATA','ESCOLA_TOTAL_COMBO_DATA','ESCOLA_TOTAL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_DATA','ESCOLA_TOTAL_FULL_CAPTURE_COMPLETE'].includes(d.type)&&d.payload){
+    const p=d.payload,s=p.biSummary||p.analysis||p.summary||(p.datasets||p.studentRows?p:null);
+    if(s&&!s.regionMode)saveSchool(s);
+  }
+});
+setInterval(()=>window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_PING',requestId:'super-ping-'+Date.now()},location.origin),2500);
+migrate();render();window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_PING',requestId:'super-ping-'+Date.now()},location.origin);setTimeout(()=>window.postMessage({source:'diagnostico-facil',type:'DIAG_REQUEST_SESSION',requestId:'super-session-'+Date.now()},location.origin),300);
 </script>
 </body></html>
