@@ -78,8 +78,5 @@ if (!recomposicaoScript) throw new Error('Recomposicao portal script missing.');
 new Function(recomposicaoScript);
 await writeFile('dist/recomposicao/index.html', recomposicaoHtml, 'utf8');
 
-await mkdir('dist/super', { recursive: true });
-const superHtml = await readFile('super/index.html', 'utf8');
-await writeFile('dist/super/index.html', superHtml, 'utf8');
 
-console.log('Diagnostico Facil build validated: capture, Professor Presente, turma cards, reset, persistence, PP1/PP2/PP3 protection, external extension ingestion, unified all-source analysis, live analysis sync, pedagogical analysis and distinct decision-oriented analysis experience. SUPER Diagnostico Facil published at /super.');
+console.log('Diagnostico Facil build validated: capture, Professor Presente, turma cards, reset, persistence, PP1/PP2/PP3 protection, external extension ingestion, unified all-source analysis, live analysis sync, pedagogical analysis and distinct decision-oriented analysis experience.');

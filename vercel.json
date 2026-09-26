@@ -14,14 +14,6 @@
       "destination": "/recomposicao/index.html"
     },
     {
-      "source": "/super",
-      "destination": "/super/index.html"
-    },
-    {
-      "source": "/super/",
-      "destination": "/super/index.html"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
