@@ -12,15 +12,17 @@
   const ANALYSIS_STORE='df-inteligencia-v2';
   const UI_STORE='df-turma-capture-ui-v1';
   const SOURCE_DEFS={
-    recomposicao:{label:'AvD · Diagnóstico',mode:'recomposicao'},
+    superbi:{label:'Super BI',mode:'super-bi'},
     alunoPresente:{label:'Aluno Presente',mode:'aluno-presente'},
-    pp1:{label:'Prova Paulista · 1º bi',mode:'prova-paulista'},
-    pp2:{label:'Prova Paulista · 2º bi',mode:'prova-paulista'},
-    pp3:{label:'Prova Paulista · 3º bi',mode:'prova-paulista'},
-    saresp:{label:'SARESP',mode:'saresp'}
+    recomposicao:{label:'Recomposição',mode:'recomposicao'},
+    pp1:{label:'Prova Paulista 1',mode:'prova-paulista'},
+    pp2:{label:'Prova Paulista 2',mode:'prova-paulista'},
+    pp3:{label:'Prova Paulista 3',mode:'prova-paulista'},
+    pda:{label:'PDA',mode:'pda'},
+    professorTutor:{label:'Professor Tutor',mode:'professor-tutor'}
   };
 
-  let ui={school:'',sourceId:'recomposicao',queue:false,currentTurma:'',customTurmas:[]};
+  let ui={school:'',sourceId:'alunoPresente',queue:false,currentTurma:'',customTurmas:[]};
   try{ui={...ui,...(JSON.parse(localStorage.getItem(UI_STORE)||'{}')||{})}}catch{}
   let active=null;
   let currentData=null;
@@ -158,12 +160,14 @@
       .sort((a,b)=>(Date.parse(b.timestamp)||0)-(Date.parse(a.timestamp)||0))[0]||null;
   }
 
-  function activeTabIsTurmas(){ return true; }
+  function activeTabIsTurmas(){
+    return !!document.querySelector('button[data-tab="turmas"].on')||/Turmas\s*·/i.test(document.querySelector('#app main .panel h2')?.textContent||'');
+  }
 
   function ensureCss(){
     if(document.getElementById('df-turma-capture-css'))return;
     const st=document.createElement('style');st.id='df-turma-capture-css';st.textContent=`
-#df-turma-capture-panel{position:fixed;right:22px;bottom:22px;z-index:2147483000;width:min(520px,calc(100vw - 28px));max-height:min(760px,calc(100vh - 44px));overflow:auto;margin:0;padding:15px;border:1px solid #d9e3ee;border-radius:16px;background:#fff;box-shadow:0 24px 70px rgba(20,48,84,.28)}
+#df-turma-capture-panel{margin-bottom:12px;padding:15px;border:1px solid #d9e3ee;border-radius:13px;background:#fff;box-shadow:0 9px 25px rgba(20,48,84,.06)}
 #df-turma-capture-panel .tc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
 #df-turma-capture-panel h2{margin:0 0 3px;font-size:14px}.tc-sub{margin:0;color:#6b7d92;font-size:8.5px;line-height:1.5}
 .tc-reset{height:30px;padding:0 9px;border:1px solid #efcfd4;border-radius:7px;background:#fff7f7;color:#9a4048;font-size:7.5px;font-weight:850}
@@ -182,12 +186,13 @@
     ensureCss();
     const old=document.getElementById('df-turma-capture-panel');
     if(!activeTabIsTurmas()){old?.remove();return;}
-    const main=document.querySelector('#app main')||document.body;
+    const main=document.querySelector('#app main');if(!main)return;
     const {schools,turmas,turmaCaps}=await discoverContext();
     let host=old;
     if(!host){
       host=document.createElement('section');host.id='df-turma-capture-panel';
-      document.body.appendChild(host);
+      const target=[...main.querySelectorAll('.panel')].find(p=>/Turmas/i.test(p.querySelector('h2')?.textContent||''))||main.querySelector('.empty')||main.lastElementChild;
+      target?.insertAdjacentElement('beforebegin',host);
     }
     if(!host)return;
     const selectedSchool=ui.school||schools[0]||'';
@@ -264,7 +269,7 @@
     localStorage.removeItem(MANUAL_META);
     localStorage.removeItem(ANALYSIS_STORE);
     localStorage.removeItem(UI_STORE);
-    ui={school:'',sourceId:'recomposicao',queue:false,currentTurma:'',customTurmas:[]};active=null;currentData=null;lastError='';
+    ui={school:'',sourceId:'alunoPresente',queue:false,currentTurma:'',customTurmas:[]};active=null;currentData=null;lastError='';
     location.reload();
   }
 
